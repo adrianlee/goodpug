@@ -1,0 +1,53 @@
+doctype html(lang='en')
+
+head
+    meta(charset='utf-8')
+    title GoodPug
+    meta(name='description', content='')
+    meta(name='author', content='')
+    meta(name='viewport', content='width=device-width, initial-scale=1')
+    link(href='//fonts.googleapis.com/css?family=Raleway:400,300,600', rel='stylesheet', type='text/css')
+    link(rel='stylesheet', href='css/normalize.css')
+    link(rel='stylesheet', href='css/skeleton.css')
+    link(rel='stylesheet', href='css/goodpug.css')
+    link(rel='icon', type='image/png', href='images/favicon.png')
+  body
+    .container
+      .row
+        #header
+          .one.columns
+            h3 GoodPug
+          .one.columns.u-pull-right
+            a.button(href="/logout") logout
+      .row
+        img.u-pull-left(src="#{photos[0].value}")
+        h5 #{displayName} (#{steamid})
+      .row
+        .seven.columns
+          h4 Pug Rooms
+          table
+            thead
+              tr
+                th Server Name
+                th Location
+                th Experience
+                th Players
+            tbody
+              tr
+                td Dave Gamache
+                td Los Angeles
+                td Intermediate-Veteran
+                td 5/10
+              tr
+                td Dwayne Johnson
+                td Chicago
+                td Novice-Intermediate
+                td 0/10
+        .five.columns
+          h4 Global Chat
+          p
+            strong jun: 
+            | looking for 3 east
+          p
+            strong jun: 
+            | hello all
