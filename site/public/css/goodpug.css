@@ -1,3 +1,16 @@
 #header {
 	margin: 20px 0;
 }
+
+.farNav {
+	display: inline-block;
+	margin-right: 10px;
+}
+
+.pug-table {
+
+}
+
+.pug-table tr:hover {
+	background: #f5f5f5;
+}

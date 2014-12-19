@@ -1,44 +1,28 @@
-var express = require('express');
-var session = require('express-session')
 var jade = require('jade');
-
+var express = require('express');
+var app = express();
+var session = require('express-session')
 var passport = require('passport');
 var SteamStrategy = require('passport-steam').Strategy;
+var steam = require('steamidconvert')();
 
-var steam = require('steamidconvert')()
-
-var app = express()
-
+// set jade templating
 app.set('views', __dirname + '/views')
 app.set('view engine', 'jade')
 
+// set directory for static files
 app.use(express.static(__dirname + '/public'));
+
+// session
 app.use(session({
   secret: 'keyboard cat',
   resave: false,
   saveUninitialized: true
 }));
+
+// passport configure
 app.use(passport.initialize());
 app.use(passport.session());
-
-app.get('/', function (req, res) {
-  if (req.isAuthenticated()) {
-
-    var data = req.user;
-    data.steamid = steam.convertToText(req.user && req.user.id) || "";
-
-    return res.render('pugs', data);
-  }
-  res.render('index');
-});
-
-var server = app.listen(3000, function () {
-
-  var host = server.address().address
-  var port = server.address().port
-
-  console.log('Example app listening at http://%s:%s', host, port)
-});
 
 passport.use(new SteamStrategy({
     returnURL: 'http://localhost:3000/auth/steam/callback',
@@ -60,6 +44,22 @@ passport.serializeUser(function(user, done) {
 
 passport.deserializeUser(function(obj, done) {
   done(null, obj);
+});
+
+// site routes
+app.get('/', function (req, res) {
+  if (req.isAuthenticated()) {
+
+    var data = req.user;
+    data.steamid = steam.convertToText(req.user && req.user.id) || "";
+
+    return res.render('pugs', data);
+  }
+  res.render('index');
+});
+
+app.get('/lobby/:id', function (req, res) {
+  res.render('lobby', req.params);
 });
 
 app.get('/auth/steam',
@@ -93,3 +93,10 @@ function ensureAuthenticated(req, res, next) {
 
   res.redirect('/');
 }
+
+var server = app.listen(3000, function () {
+  var host = server.address().address
+  var port = server.address().port
+
+  console.log('Example app listening at http://%s:%s', host, port)
+});

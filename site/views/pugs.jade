@@ -1,50 +1,50 @@
 doctype html(lang='en')
 
 head
-    meta(charset='utf-8')
-    title GoodPug
-    meta(name='description', content='')
-    meta(name='author', content='')
-    meta(name='viewport', content='width=device-width, initial-scale=1')
-    link(href='//fonts.googleapis.com/css?family=Raleway:400,300,600', rel='stylesheet', type='text/css')
-    link(rel='stylesheet', href='css/normalize.css')
-    link(rel='stylesheet', href='css/skeleton.css')
-    link(rel='stylesheet', href='css/goodpug.css')
-    link(rel='icon', type='image/png', href='images/favicon.png')
-  body
-    .container
-      .row
-        #header
-          .one.columns
-            h3 GoodPug
-          .one.columns.u-pull-right
-            a.button(href="/logout") logout
-      .row
-        img.u-pull-left(src="#{photos[0].value}")
-        h5 #{displayName} (#{steamid})
-      .row
-        .seven.columns
-          h4 Pug Rooms
-          table
-            thead
-              tr
-                th Server Name
-                th Location
-                th Experience
-                th Players
-            tbody
-              tr(onclick="location.href='steam://connect/104.236.164.175:27015'")
-                td VACation
-                td Los Angeles
-                td Intermediate-Veteran
-                td 5/10
-              tr(onclick="location.href='steam://connect/104.236.164.175:27015'")
-                td Flusha cheats
-                td Chicago
-                td Novice-Intermediate
-                td 0/10
-        .five.columns
-          h4 Global Chat
+  meta(charset='utf-8')
+  title GoodPug
+  meta(name='description', content='')
+  meta(name='author', content='')
+  meta(name='viewport', content='width=device-width, initial-scale=1')
+  link(href='//fonts.googleapis.com/css?family=Raleway:400,300,600', rel='stylesheet', type='text/css')
+  link(rel='stylesheet', href='css/normalize.css')
+  link(rel='stylesheet', href='css/skeleton.css')
+  link(rel='stylesheet', href='css/goodpug.css')
+  link(rel='icon', type='image/png', href='images/favicon.png')
+
+body
+  .container
+    .row
+      #header
+        .twelve.column
+          h3 GoodPug
+          // a.farNav.button(href="/profile") profile
+          // a.farNav.button(href="/admin") admin
+          a.farNav.button(href="/logout") logout
+    .row
+      img.farNav(src="#{photos[0].value}")
+      h5.farNav #{displayName} (#{steamid})
+    .row
+      .twelve.columns
+        h4 Pug Rooms
+        table.u-full-width
+          thead
+            tr
+              th Server Name
+              th Location
+              th Experience
+              th Players
+          tbody.pug-table
+            // tr(onclick="location.href='steam://connect/104.236.164.175:27015'")
+            tr(onclick="location.href='/lobby/123'")
+              td Bellevue
+              td San Francisco
+              td Intermediate-Veteran
+              td 5/10
+
+    .row
+      .twelve.columns
+        // h4 Global Chat
           p
             strong jun: 
             | let's pug!
