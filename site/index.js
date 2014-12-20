@@ -6,32 +6,39 @@ var RedisStore = require('connect-redis')(session);
 var passport = require('passport');
 var SteamStrategy = require('passport-steam').Strategy;
 var steam = require('steamidconvert')();
-var mongoose = require('mongoose');
 var logger = require('morgan');
-var db = mongoose.connect('mongodb://goodpug:goodpug@widmore.mongohq.com:10010/pillbox', { server: { auto_reconnect: true } });
 
-// db.on('connecting', function() {
-//   console.log('connecting to MongoDB...');
-// });
+var mongoose = require('mongoose');
+var mongoURI = "mongodb://goodpug:goodpug@widmore.mongohq.com:10010/pillbox";
+var db = mongoose.connection;
 
-// db.on('error', function(error) {
-//   console.error('Error in MongoDb connection: ' + error);
-//   mongoose.disconnect();
-// });
-// db.on('connected', function() {
-//   console.log('MongoDB connected!');
-// });
-// db.once('open', function() {
-//   console.log('MongoDB connection opened!');
-// });
-// db.on('reconnected', function () {
-//   console.log('MongoDB reconnected!');
-// });
-// db.on('disconnected', function() {
-//   console.log('MongoDB disconnected!');
-//   mongoose.connect(dbURI, {server:{auto_reconnect:true}});
-// });
-// mongoose.connect(dbURI, {server:{auto_reconnect:true}});
+db.on('connecting', function() {
+  console.log('connecting to MongoDB...');
+});
+
+db.on('error', function(error) {
+  console.error('Error in MongoDb connection: ' + error);
+  mongoose.disconnect();
+});
+
+db.on('connected', function() {
+  console.log('MongoDB connected!');
+});
+
+db.once('open', function() {
+  console.log('MongoDB connection opened!');
+});
+
+db.on('reconnected', function () {
+  console.log('MongoDB reconnected!');
+});
+
+db.on('disconnected', function() {
+  console.log('MongoDB disconnected!');
+  mongoose.connect(mongoURI, { server: { auto_reconnect: true } });
+});
+
+mongoose.connect(mongoURI, { server: { auto_reconnect: true } });
 
 var Player = mongoose.model('Player', {
   displayName: String,
@@ -48,18 +55,16 @@ var Player = mongoose.model('Player', {
 app.set('views', __dirname + '/views')
 app.set('view engine', 'jade')
 
+// import server-side libraries for front-end use.
+app.locals.moment = require('moment');
+
 // set directory for static files
 app.use(express.static(__dirname + '/public'));
 
+// set logging level
 app.use(logger('dev'));
 
 // session
-// app.use(session({
-//   secret: 'keyboard cat',
-//   resave: false,
-//   saveUninitialized: true
-// }));
-
 app.use(session({
     store: new RedisStore({
       host: "pub-redis-16323.us-east-1-2.4.ec2.garantiadata.com",
@@ -137,12 +142,12 @@ app.get('/', function (req, res) {
     var data = req.user;
     data.steamid = steam.convertToText(req.user && req.user.id) || "";
 
-    return res.render('pugs', {});
+    return res.render('home', {});
   }
   res.render('index');
 });
 
-app.get('/lobby/:id', ensureAuthenticated, function (req, res) {
+app.get('/r/:id', ensureAuthenticated, function (req, res) {
   res.render('lobby', req.params);
 });
 

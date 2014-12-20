@@ -14,17 +14,15 @@ block content
               th Alias
               th Account ID
               th Steam ID
-              th Profile
-              th Last Seen
+              th Joined
           tbody.pug-table
             each player, index in playerList
               tr
                 td= index+1
-                td= player.displayName
+                td
+                  a(href="#{player.profileUrl}")= player.displayName
                 td
                   a(href="https://steamrep.com/?id=#{player.id}")= player.id
                 td= player.steamId
-                td
-                  a(href="#{player.profileUrl}")= player.profileUrl
-                td= player.updated
+                td= moment(player._id.getTimestamp()).fromNow()
 
