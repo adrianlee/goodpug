@@ -1,36 +1,17 @@
-doctype html(lang='en')
+extends ./layout.jade
 
-head
-  meta(charset='utf-8')
-  title GoodPug
-  meta(name='description', content='')
-  meta(name='author', content='')
-  meta(name='viewport', content='width=device-width, initial-scale=1')
-  link(href='//fonts.googleapis.com/css?family=Raleway:400,300,600', rel='stylesheet', type='text/css')
-  link(rel='stylesheet', href='css/normalize.css')
-  link(rel='stylesheet', href='css/skeleton.css')
-  link(rel='stylesheet', href='css/goodpug.css')
-  link(rel='icon', type='image/png', href='images/favicon.png')
-
-body
+block content
   .container
     .row
-      #header
-        .twelve.column
-          h3 GoodPug
-          // a.farNav.button(href="/profile") profile
-          // a.farNav.button(href="/admin") admin
-          a.farNav.button(href="/logout") logout
-    .row
-      img.farNav(src="#{photos[0].value}")
-      h5.farNav #{displayName} (#{steamid})
+      img.nav-left(src="#{user.avatarSmall}")
+      h5.nav-left #{user && user.displayName}
     .row
       .twelve.columns
-        h4 Pug Rooms
+        h4 Rooms
         table.u-full-width
           thead
             tr
-              th Server Name
+              th Name
               th Location
               th Experience
               th Players

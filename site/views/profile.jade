@@ -1,0 +1,12 @@
+extends ./layout.jade
+
+block content
+  .container
+    .row
+      p
+        img(src="#{user.avatarBig}")
+      h4 <b>Alias:</b> #{user && user.displayName}
+      h4 <b>Steam ID:</b> #{user && user.steamid}
+      h4 
+        <b>Profile: </b>
+        a(href="#{user.profileUrl}") #{user.profileUrl}

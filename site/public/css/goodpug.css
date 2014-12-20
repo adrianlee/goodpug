@@ -2,9 +2,19 @@
 	margin: 20px 0;
 }
 
-.farNav {
+.title {
+	text-decoration: none;
+}
+
+.nav-left {
 	display: inline-block;
 	margin-right: 10px;
+}
+
+.nav-right {
+	display: inline-block;
+	margin-left: 10px;
+	float: right;
 }
 
 .pug-table {

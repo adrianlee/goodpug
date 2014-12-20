@@ -1,1 +1,21 @@
-p Lobby #{id}
+extends ./layout.jade
+
+block content
+  .container
+    .row
+      img.nav-left(src="#{user.avatarSmall}")
+      h5.nav-left #{user.displayName}
+    .row
+      .six.columns
+        h3 Lobby
+        h5 <b>Status:</b> Waiting for players
+        h5 <b>Location</b>: Chicago
+        h5 <b>Experience</b>: Novice
+      .six.columns
+        h5 Players in Room (5/10)
+          ul
+            li jun
+            li cesar
+            li ynot
+            li rich
+            li hip

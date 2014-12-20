@@ -1,20 +1,11 @@
-doctype html(lang='en')
+extends ./layout.jade
 
-head
-    meta(charset='utf-8')
-    title GoodPug
-    meta(name='description', content='')
-    meta(name='author', content='')
-    meta(name='viewport', content='width=device-width, initial-scale=1')
-    link(href='//fonts.googleapis.com/css?family=Raleway:400,300,600', rel='stylesheet', type='text/css')
-    link(rel='stylesheet', href='css/normalize.css') 
-    link(rel='stylesheet', href='css/skeleton.css')
-    link(rel='icon', type='image/png', href='images/favicon.png')
-  body
-    .container
-      .row
-        .one-half.column(style='margin-top: 25%')
-          h3 GoodPug
-          h5 The alternative to match-making       
-          p Play on 128-tick servers with players of your skill level for free!      
-          a.button.button-primary(href='/auth/steam') Login with Steam
+block content
+  .container
+    .row
+      .one-half.column(style='margin-top: 25%')
+        h3
+          a.title(href="/") GoodPug
+        h5 The alternative to match-making       
+        p Play on 128-tick servers with players of your skill level for free!      
+        a.button.button-primary(href='/auth/steam') Login with Steam

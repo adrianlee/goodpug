@@ -1,0 +1,9 @@
+.row
+  #header
+    .twelve.column
+      h3.nav-left
+        a.title(href="/") GoodPug
+      a.nav-right.button(href="/logout") logout
+      a.nav-right.button(href="/profile") profile
+      if isAdmin
+        a.nav-right.button(href="/admin") admin
