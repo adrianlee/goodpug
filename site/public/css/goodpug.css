@@ -24,3 +24,7 @@
 .pug-table tr:hover {
 	background: #f5f5f5;
 }
+
+.player-list b {
+  color: #00FF7F;
+}

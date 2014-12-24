@@ -1,0 +1,69 @@
+extends ./layout.jade
+
+block content
+  .container
+    .row
+      img.nav-left(src="#{user.avatarSmall}")
+      h5.nav-left #{user.displayName}
+
+    .row
+      .six.columns
+        h4 Room 
+          span #{name}
+        h5 
+          b Status: 
+          span.room-status Connecting...
+        h5 <b>Location</b>: #{location}
+        //- h5 <b>Experience</b>: n/a
+        button.button-primary(onclick="ready()") Ready
+      .six.columns
+        h4 Players in Room (<span class="player-count">0</span>/10)
+        ul.player-list
+
+
+
+block append scripts
+  script.
+    var socket = io();
+
+    socket.on('player joined', function (data) {
+      console.log(data.displayName + ' joined');
+    });
+
+    socket.on('player left', function (data) {
+      console.log(data + ' left');
+    });
+
+    socket.on('new message', function (data) {
+      console.log(data)
+    });
+
+    socket.on('room update', function (data) {
+      $(".player-count").html(data.playerCount);
+      $(".room-status").html(data.ready ? "Ready" : "Waiting for players");
+      $(".player-list").html("");
+      for (var i in data.players) {
+        if (data.players[i] && data.players[i].ready) {
+          $(".player-list").append("<li><b>" + data.players[i].displayName + "</b></li>");
+        } else {
+          $(".player-list").append("<li>" + data.players[i].displayName + "</li>");
+        }
+
+      //- socket.emit("player ready");
+    }
+
+    });
+
+    function join() {
+      socket.emit('join room', {
+        id: "#{user.id}",
+        displayName: "#{user.displayName}",
+        room: "#{name}"
+      });
+    }
+
+    function ready() {
+      socket.emit("player ready");
+    }
+
+    join();
