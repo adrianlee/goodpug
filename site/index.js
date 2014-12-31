@@ -209,7 +209,7 @@ io.on('connection', function(socket) {
 
     console.log(readyCount, "players are ready");
 
-    if (readyCount == server.READYLIMIT) {
+    if (readyCount >= server.READYLIMIT) {
       // socket.updateRoomInfo();
       console.log("all players ready!")    
       
