@@ -15,7 +15,7 @@ block content
           span.room-status Connecting...
         h5 <b>Location</b>: #{location}
         //- h5 <b>Experience</b>: n/a
-        button.button-primary(onclick="ready()") Ready
+        button.button-primary.ready-button(onclick="ready()") Ready
       .six.columns
         h4 Players in Room (<span class="player-count">0</span>/10)
         ul.player-list
@@ -39,6 +39,13 @@ block append scripts
     });
 
     socket.on('room update', function (data) {
+      if (data.ready) {
+        $(".ready-button").show();
+      } else {
+        $(".ready-button").hide();
+      }
+
+      $(".player-count").html(data.playerCount);
       $(".player-count").html(data.playerCount);
       $(".room-status").html(data.ready ? "Ready" : "Waiting for players");
       $(".player-list").html("");
@@ -49,9 +56,12 @@ block append scripts
           $(".player-list").append("<li>" + data.players[i].displayName + "</li>");
         }
 
-      //- socket.emit("player ready");
-    }
+        //- socket.emit("player ready");
+      }
+    });
 
+    socket.on('start match', function (data) {
+      startMatch(data);
     });
 
     function join() {
@@ -64,6 +74,10 @@ block append scripts
 
     function ready() {
       socket.emit("player ready");
+    }
+
+    function startMatch(connectionInfo) {
+      location.href = connectionInfo;
     }
 
     join();

@@ -191,6 +191,7 @@ io.on('connection', function(socket) {
       return console.log("User is not in a Room");
     }
 
+    // set player as ready
     if (!server.playerReady(socket.playerId))
       return console.log("User not found");
 
@@ -198,15 +199,21 @@ io.on('connection', function(socket) {
 
     for (var player in server.players)
     {
-      if (player.ready){
+      if (server.getPlayer(player) && server.getPlayer(player).ready) {
         ++readyCount;
       } else {
+        console.log("oops");
         return;
       }
     }
-    if (readyCount == 10) {
+
+    console.log(readyCount, "players are ready");
+
+    if (readyCount == server.READYLIMIT) {
       // socket.updateRoomInfo();
-      console.log("all players ready!")      
+      console.log("all players ready!")    
+      
+      io.sockets.to(socket.currentRoom).emit("start match", server.getConnectionInfo());
     }
   });
 
