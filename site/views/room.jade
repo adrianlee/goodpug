@@ -1,83 +1,40 @@
 extends ./layout.jade
 
 block content
-  .container
+  .container(ng-controller="lobbyController")
     .row
       img.nav-left(src="#{user.avatarSmall}")
       h5.nav-left #{user.displayName}
 
-    .row
-      .six.columns
-        h4 Room 
-          span #{name}
-        h5 
-          b Status: 
-          span.room-status Connecting...
-        h5 <b>Location</b>: #{location}
-        //- h5 <b>Experience</b>: n/a
-        button.button-primary.ready-button(onclick="ready()") Ready
-      .six.columns
-        h4 Players in Room (<span class="player-count">0</span>/10)
-        ul.player-list
+    div(ng-switch="lobbyState")
+      .row(ng-switch-when="lobby")
+          .six.columns
+            h4 Lobby 
+              span #{name}
+            h5 
+              b Status: 
+              span.room-status Connecting...
+            h5 <b>Location</b>: #{location}
+            //- h5 <b>Experience</b>: n/a
+            button.button-primary(ng-show="matchFound" onclick="ready()") Ready
+          .six.columns
+            h4 Players in Lobby (<span class="player-count">0</span>/10)
+            ul.player-list
 
+      .row(ng-switch-when="live")
+        .one.column
+          h4 Match Live
 
+      .row(ng-switch-default)
+        .six.columns
+          h4 Loading...
 
-block append scripts
+block prepend scripts
   script.
-    var socket = io();
+    var _data = {};
+    _data.id = "#{user.id}";
+    _data.displayName = "#{user.displayName}";
+    _data.room = "#{name}";
 
-    socket.on('player joined', function (data) {
-      console.log(data.displayName + ' joined');
-    });
 
-    socket.on('player left', function (data) {
-      console.log(data + ' left');
-    });
-
-    socket.on('new message', function (data) {
-      console.log(data)
-    });
-
-    socket.on('room update', function (data) {
-      if (data.ready) {
-        $(".ready-button").show();
-      } else {
-        $(".ready-button").hide();
-      }
-
-      $(".player-count").html(data.playerCount);
-      $(".player-count").html(data.playerCount);
-      $(".room-status").html(data.ready ? "Ready" : "Waiting for players");
-      $(".player-list").html("");
-      for (var i in data.players) {
-        if (data.players[i] && data.players[i].ready) {
-          $(".player-list").append("<li><b>" + data.players[i].displayName + "</b></li>");
-        } else {
-          $(".player-list").append("<li>" + data.players[i].displayName + "</li>");
-        }
-
-        //- socket.emit("player ready");
-      }
-    });
-
-    socket.on('start match', function (data) {
-      startMatch(data);
-    });
-
-    function join() {
-      socket.emit('join room', {
-        id: "#{user.id}",
-        displayName: "#{user.displayName}",
-        room: "#{name}"
-      });
-    }
-
-    function ready() {
-      socket.emit("player ready");
-    }
-
-    function startMatch(connectionInfo) {
-      location.href = connectionInfo;
-    }
-
-    join();
+    

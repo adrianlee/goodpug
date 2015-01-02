@@ -12,7 +12,7 @@ head
   link(rel='stylesheet', href='/css/goodpug.css')
   link(rel='icon', type='image/png', href='/images/favicon.png')
 
-body
+body(ng-app="goodPug")
   if user
     .container
       include ./nav.jade
@@ -21,4 +21,6 @@ body
 
   block scripts
     script(src="https://cdn.socket.io/socket.io-1.2.1.js")
-    script(src="//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js")
+    script(src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js")
+    script(src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.8/angular.min.js")
+    script(src="/webclient.js")

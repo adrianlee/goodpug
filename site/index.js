@@ -17,12 +17,12 @@ var PlayerManager = require("./lib/PlayerManager");
 // set jade templating
 app.set('views', __dirname + '/views')
 app.set('view engine', 'jade')
-
 app.disable('etag');
 
 // import server-side libraries for front-end use.
 app.locals.moment = require('moment');
 app.locals.lodash = require('lodash');
+app.locals.pretty = true;
 
 // set logging level
 app.use(logger('dev'));
