@@ -7,7 +7,11 @@ GoodPug.controller("mainController", function ($scope, $http) {
 GoodPug.controller("lobbyController", function ($scope, $http) {
     console.log("Joined Lobby");
     
-    $scope.server = {};
+    $scope.server = {
+        ready: false,
+        playerCount: 0,
+        players: {}
+    };
 
     var socket = io();
 
@@ -26,24 +30,25 @@ GoodPug.controller("lobbyController", function ($scope, $http) {
     socket.on('room update', function (data) {
       $scope.lobbyState = "lobby";
 
-      $scope.matchFound = data.ready;
-      $scope.$apply();
+      $scope.server.ready = data.ready;
 
-      $(".player-count").html(data.playerCount);
-      $(".player-count").html(data.playerCount);
-      $(".room-status").html(data.ready ? "Ready" : "Waiting for players");
-      $(".player-list").html("");
-      for (var i in data.players) {
-        if (data.players[i] && data.players[i].ready) {
-          $(".player-list").append("<li><b>" + data.players[i].displayName + "</b></li>");
-        } else {
-          $(".player-list").append("<li>" + data.players[i].displayName + "</li>");
-        }
+      $scope.server.playerCount = data.playerCount;
 
-        //- socket.emit("player ready");
-      }
+      // $(".room-status").html(data.ready ? "Ready" : "Waiting for players");
+      // $(".player-list").html("");
+
+      $scope.server.players = data.players;
+
+      // for (var i in data.players) {
+      //   if (data.players[i] && data.players[i].ready) {
+      //     $(".player-list").append("<li><b>" + data.players[i].displayName + "</b></li>");
+      //   } else {
+      //     $(".player-list").append("<li>" + data.players[i].displayName + "</li>");
+      //   }
+      // }
 
       
+      $scope.$apply();
     });
 
     socket.on('start match', function (data) {

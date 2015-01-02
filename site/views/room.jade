@@ -6,28 +6,28 @@ block content
       img.nav-left(src="#{user.avatarSmall}")
       h5.nav-left #{user.displayName}
 
-    div(ng-switch="lobbyState")
+    div(ng-switch="lobbyState" ng-cloak)
       .row(ng-switch-when="lobby")
           .six.columns
-            h4 Lobby 
-              span #{name}
-            h5 
-              b Status: 
-              span.room-status Connecting...
+            h4 Lobby #{name}
             h5 <b>Location</b>: #{location}
+            h5 <b>Status</b>: {{server.ready}}
             //- h5 <b>Experience</b>: n/a
-            button.button-primary(ng-show="matchFound" onclick="ready()") Ready
+            button.button-primary(ng-show="server.ready" onclick="ready()") Ready
+          
           .six.columns
-            h4 Players in Lobby (<span class="player-count">0</span>/10)
+            h4 Players in Lobby ({{server.playerCount}}/10)
             ul.player-list
+              li(ng-repeat="player in server.players")
+                span {{player.displayName}}
 
       .row(ng-switch-when="live")
-        .one.column
+        .twelve.columns
           h4 Match Live
 
       .row(ng-switch-default)
-        .six.columns
-          h4 Loading...
+        .twelve.columns
+          h4 Joining Lobby
 
 block prepend scripts
   script.

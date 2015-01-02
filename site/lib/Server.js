@@ -16,7 +16,7 @@ function Server(options) {
 	this.password = "omg";
 };
 
-Server.prototype.READYLIMIT = 1;
+Server.prototype.READYLIMIT = 2;
 
 Server.prototype.addPlayer = function (player) {
 	return this.players[player.id] = player;
@@ -39,7 +39,7 @@ Server.prototype.playerCount = function () {
 };
 
 Server.prototype.isReady = function () {
-	return this.playerCount() == this.READYLIMIT;
+	return this.playerCount() >= this.READYLIMIT;
 };
 
 Server.prototype.playerReady = function(playerId) {
