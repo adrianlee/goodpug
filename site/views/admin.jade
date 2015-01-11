@@ -4,6 +4,85 @@ mixin player
 
 block content
   .container
+    h3 Add a server
+    script.
+      function submitNewServer() {
+        var data = {};
+
+        data.name = $("#serverName").val() || "";
+        data.location = $("#location").val() || "";
+        data.ip = $("#ip").val() || "";
+        data.port = $("#port").val() || "";
+        data.rcon = $("#rcon").val() || "";
+
+        $.post("/admin/server", data).done(function (data) {
+          console.log(data);
+        });
+      }
+
+      function deleteServer(id) {
+        var data = {};
+        data.id = id;
+
+        if (id) {
+          $.ajax({ url: "/admin/server", data: data, type: 'DELETE' }).done(function (data) {
+            console.log(data);
+          });
+        }
+      }
+
+    form(onsubmit="submitNewServer()")
+      .row
+        .six.columns
+          label Name
+          input.u-full-width(type="text", name="name", id="serverName", required)
+
+        .six.columns
+          label Location
+          select.u-full-width(name="location", id="location", required)
+            option(value="USEAST") US East
+            option(value="USCENTRAL") US Central
+            option(value="USWEST") US West
+
+      .row
+        .six.columns
+          label IP
+          input.u-full-width(type="text", name="ip", id="ip", required)
+        .six.columns
+          label Port
+          input.u-full-width(type="text", name="port", id="port", required)
+      .row
+        .six.columns
+          label RCON Password
+          input.u-full-width(type="text", name="rcon", id="rcon", required)
+
+      .row
+        input.button-primary(type="submit", value="Add")
+
+
+    .row
+      .twelve.columns
+        h3 Server list
+        table.u-full-width
+          thead
+            tr
+              th #
+              th Name
+              th IP
+              th Port
+              th Status
+              th Commands
+          tbody.pug-table
+            each server, index in serverList
+              tr
+                td= index + 1
+                td= server.name
+                td= server.ip
+                td= server.port
+                td= server.rcon
+                td
+                  a(onclick="deleteServer('#{server.id}')") delete
+
     .row
       .twelve.columns
         h3 Player list
@@ -18,7 +97,7 @@ block content
           tbody.pug-table
             each player, index in playerList
               tr
-                td= index+1
+                td= index + 1
                 td
                   a(href="#{player.profileUrl}")= player.displayName
                 td

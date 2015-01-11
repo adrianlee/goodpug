@@ -6,6 +6,9 @@ var passport = require('passport');
 var logger = require('morgan');
 var _ = require("lodash");
 var app = express();
+var bodyParser = require('body-parser');
+
+var async = require('async');
 
 var db = require("./database");
 var passportInit = require("./passport");
@@ -23,6 +26,10 @@ app.disable('etag');
 app.locals.moment = require('moment');
 app.locals.lodash = require('lodash');
 app.locals.pretty = true;
+
+// parse json body
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }))
 
 // set logging level
 app.use(logger('dev'));
@@ -82,13 +89,57 @@ app.get('/r/:roomid', ensureAuthenticated, function (req, res) {
 });
 
 app.get('/admin', ensureAuthenticated, function (req, res) {
-  db.Player.find({}, function (err, docs) {
-    if (err)
-      return;
+  var fetchPlayers = function (callback) {
+    db.Player.find({}, function (err, docs) {
+      callback(err, docs);
+    });  
+  };
 
-    res.locals.playerList = docs;
+  var fetchServers = function (callback) {
+    db.Server.find({}, function (err, docs) {
+      callback(err, docs);
+    });  
+  }
+  
+  async.parallel({
+    players: fetchPlayers,
+    servers: fetchServers
+  }, function (err, results) {
+    if (err) {
+      //res.locals.errorMessage
+    }
+
+    res.locals.playerList = results.players || [];
+    res.locals.serverList = results.servers || [];
+
     res.render('admin');
   });
+});
+
+app.get('/admin/server', ensureAuthenticated, function (req, res) {
+  // ip: req.body.ip, port: req.body.port
+  db.Server.find({}, function (err, docs) {
+    callback(err, docs);
+    res.send(docs);
+  });
+});
+
+app.post('/admin/server', ensureAuthenticated, function (req, res) {
+  var server = new db.Server(req.body);
+
+  server.save(function (err, doc) {
+    if (err)  return res.send(400, err);
+    res.send(doc);
+  });
+});
+
+app.delete('/admin/server', ensureAuthenticated, function (req, res) {
+  console.log(req.body);
+  db.Server.findOneAndRemove(req.body.id, function (err, doc) {
+    if (err) return res.send(400, err);
+    console.log(doc)
+    res.send(doc);
+  });  
 });
 
 app.get('/profile', ensureAuthenticated, function (req, res) {
