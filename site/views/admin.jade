@@ -17,6 +17,7 @@ block content
 
         $.post("/admin/server", data).done(function (data) {
           console.log(data);
+          location.reload();
         });
       }
 
@@ -27,6 +28,7 @@ block content
         if (id) {
           $.ajax({ url: "/admin/server", data: data, type: 'DELETE' }).done(function (data) {
             console.log(data);
+            location.reload();
           });
         }
       }
@@ -35,7 +37,7 @@ block content
       .row
         .six.columns
           label Name
-          input.u-full-width(type="text", name="name", id="serverName", required)
+          input.u-full-width(type="text", name="name", id="serverName", placeholder="San Francisco #1", required)
 
         .six.columns
           label Location
@@ -47,10 +49,10 @@ block content
       .row
         .six.columns
           label IP
-          input.u-full-width(type="text", name="ip", id="ip", required)
+          input.u-full-width(type="text", name="ip", id="ip", placeholder="63.41.231.4", required)
         .six.columns
           label Port
-          input.u-full-width(type="text", name="port", id="port", required)
+          input.u-full-width(type="text", name="port", id="port", placeholder="27015", required)
       .row
         .six.columns
           label RCON Password
@@ -72,7 +74,7 @@ block content
               th Port
               th Status
               th Commands
-          tbody.pug-table
+          tbody.server-table
             each server, index in serverList
               tr
                 td= index + 1
@@ -94,7 +96,7 @@ block content
               th Account ID
               th Steam ID
               th Joined
-          tbody.pug-table
+          tbody.player-table
             each player, index in playerList
               tr
                 td= index + 1

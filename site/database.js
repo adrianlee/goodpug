@@ -44,7 +44,7 @@ var Player = mongoose.model('Player', {
 });
 
 var Server = mongoose.model('Server', {
-  displayName: String,
+  name: String,
   ip: String,
   port: String,
   rcon: String,
