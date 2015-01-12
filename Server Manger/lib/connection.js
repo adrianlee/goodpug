@@ -6,7 +6,6 @@ var EventEmitter = require('events').EventEmitter;
 var Request = require("./socket/request");
 var Response = require("./socket/response");
 
-var connection;
 var packetId = 0;
 
 var Connection = function (host, port, rconPassword) {
@@ -59,7 +58,7 @@ Connection.prototype.connect = function (callback) {
 	// Request id and Response id are the same.
 	self.connection.on('data', function(data) {
 	    var res = new Response(data);
-	    console.log(res);
+	    // console.log(res);
 
 	    self.emit(res.id.toString(10), res);
 	});
@@ -88,10 +87,10 @@ Connection.prototype.exec = function (command, callback) {
 	function packetSave(req) {
 		// Save all packets from the response
 		if (self.queue[reqId]) {
-            return self.queue[reqId] += req.body;
-        }
+        return self.queue[reqId] += req.body;
+    }
 
-        self.queue[reqId] = req.body;
+    self.queue[reqId] = req.body;
 	}
 }
 
@@ -106,13 +105,11 @@ Connection.prototype.request = function (content, type, id) {
 		body: content
 	});
 
-  	// console.log(request);
+	// console.log(request);
 
 	self.connection.write(request.buffer, function (err) {
-		if (err) {
-
-		}
-		console.log("sent packet", id);
+		if (err) {}
+		// console.log("sent packet", id);
 	});
 
   return id.toString(10);
