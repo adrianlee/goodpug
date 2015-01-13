@@ -16,8 +16,11 @@ rcon.connect(function (err) {
     rcon.exec("logaddress_delall", function (res) {
       // console.log(res);
       rcon.exec("logaddress_add " + ip + ":" + port, function (res) {
-    		// console.log(res);
+        rcon.exec("users", function (res) {
+          console.log(res);
+        });
     	});
     });
   });
 });
+
