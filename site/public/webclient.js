@@ -1,20 +1,38 @@
 var GoodPug = angular.module('goodPug', []);
 
-GoodPug.controller("mainController", function ($scope, $http) {
+GoodPug.controller("mainController", function ($scope) {
 
 });
 
-GoodPug.controller("lobbyController", function ($scope, $http) {
+GoodPug.controller("lobbyController", function ($scope) {
     console.log("Joined Lobby");
     
-    $scope.server = {
-        ready: false,
-        playerCount: 0,
-        players: {}
-    };
+    $scope.server = {};
 
-    var socket = io();
+    var socket = io("/lobby");
 
+    // ROOM UPDATES
+    socket.on('lobby update', function (data) {
+      console.log("lobby update", data);
+
+      $scope.server = data;
+      $scope.$apply();
+    });
+
+    socket.on('start match', function (data) {
+      if (confirm("Match found, press OK to join server.")) {
+        $scope.startMatch(data);
+      }
+    });
+
+    // MATCH LIVE
+    socket.on('live', function (data) {
+      console.log("live", data);
+      $scope.server = data;
+      $scope.$apply();
+    });
+
+    // ROOM CHAT
     socket.on('player joined', function (data) {
       console.log(data.displayName + ' joined');
     });
@@ -24,49 +42,23 @@ GoodPug.controller("lobbyController", function ($scope, $http) {
     });
 
     socket.on('new message', function (data) {
-      console.log(data)
+      console.log(data);
     });
 
-    socket.on('room update', function (data) {
-      $scope.lobbyState = "lobby";
-
-      $scope.server.ready = data.ready;
-
-      $scope.server.playerCount = data.playerCount;
-
-      // $(".room-status").html(data.ready ? "Ready" : "Waiting for players");
-      // $(".player-list").html("");
-
-      $scope.server.players = data.players;
-
-      // for (var i in data.players) {
-      //   if (data.players[i] && data.players[i].ready) {
-      //     $(".player-list").append("<li><b>" + data.players[i].displayName + "</b></li>");
-      //   } else {
-      //     $(".player-list").append("<li>" + data.players[i].displayName + "</li>");
-      //   }
-      // }
-
-      $scope.$apply();
-    });
-
-    socket.on('start match', function (data) {
-      startMatch(data);
-    });
 
     function join() {
-      socket.emit('join room', {
+      socket.emit('join lobby', {
         id: _data.id,
         displayName: _data.displayName,
         room: _data.room
       });
     }
 
-    function ready() {
+    $scope.ready = function() {
       socket.emit("player ready");
-    }
+    };
 
-    function startMatch(connectionInfo) {
+    $scope.startMatch = function(connectionInfo) {
       location.href = connectionInfo;
     }
 
@@ -74,5 +66,22 @@ GoodPug.controller("lobbyController", function ($scope, $http) {
 });
 
 GoodPug.controller("serverListController", function ($scope) {
-  $scope.servers = {};
+  $scope.servers = [];
+
+  var home = io('/home');
+
+  // PUG SERVERS
+  home.on("servers", function (data) {
+    console.log(data);
+    var array = $.map(data, function(value, index) {
+        $scope.servers = [value];
+        $scope.$apply();
+    });
+  })
+
+  home.emit("servers");
+
+  $scope.joinRoom = function (server) {
+    location.href = "/lobby/" + server.id;
+  }
 });

@@ -65,11 +65,10 @@ app.use(function (req, res, next) {
   if (!req.session) {
     return next(new Error('Session service is down'));
   }
-  
-  next()
+  next();
 })
 
-// site routes
+// WELCOME OR HOME
 app.get('/', function (req, res) {
   if (req.isAuthenticated()) {
     var data = req.user;
@@ -80,11 +79,8 @@ app.get('/', function (req, res) {
   res.render('welcome');
 });
 
-app.get('/servers', ensureAuthenticated, function (req, res) {
-  res.send(ServerManager.servers);
-});
-
-app.get('/r/:id', ensureAuthenticated, function (req, res) {
+// LOBBY
+app.get('/lobby/:id', ensureAuthenticated, function (req, res) {
   if (!ServerManager.getServer(req.params.id)) {
     return res.send("Room not found");
   }
@@ -92,6 +88,7 @@ app.get('/r/:id', ensureAuthenticated, function (req, res) {
   res.render('room', ServerManager.getServer(req.params.id));
 });
 
+// ADMIN PAGE
 app.get('/admin', ensureAuthenticated, function (req, res) {
   var fetchPlayers = function (callback) {
     db.Player.find({}, function (err, docs) {
@@ -120,14 +117,15 @@ app.get('/admin', ensureAuthenticated, function (req, res) {
   });
 });
 
+// ADMIN GET SERVERS
 app.get('/admin/server', ensureAuthenticated, function (req, res) {
-  // ip: req.body.ip, port: req.body.port
   db.Server.find({}, function (err, docs) {
     callback(err, docs);
     res.send(docs);
   });
 });
 
+// ADMIN ADD SERVER
 app.post('/admin/server', ensureAuthenticated, function (req, res) {
   var server = new db.Server(req.body);
 
@@ -137,6 +135,7 @@ app.post('/admin/server', ensureAuthenticated, function (req, res) {
   });
 });
 
+// ADMIN REMOVE SERVER
 app.delete('/admin/server', ensureAuthenticated, function (req, res) {
   console.log(req.body);
   db.Server.findOneAndRemove(req.body.id, function (err, doc) {
@@ -146,10 +145,12 @@ app.delete('/admin/server', ensureAuthenticated, function (req, res) {
   });  
 });
 
+// PROFILE ME
 app.get('/profile', ensureAuthenticated, function (req, res) {
   res.render('profile');
 });
 
+// STEAM AUTH
 app.get('/auth/steam',
   passport.authenticate('steam'),
   function(req, res){
@@ -164,6 +165,7 @@ app.get('/auth/steam/callback',
     res.redirect('/');
   });
 
+// LOGOUT
 app.get('/logout', function(req, res){
   req.logout();
   res.redirect('/');
@@ -195,19 +197,43 @@ ServerManager.init();
 // socket.io
 var io = require('socket.io').listen(server);
 
-io.on('connection', function(socket) {
+var home = io.of('/home');
+
+home.on('connection', function (socket) {
+  console.log('IO /home');
+  socket.on('servers', function (data) {
+    console.log(ServerManager.getServerList());
+    home.emit("servers", ServerManager.getServerList());
+  });
+});
+
+var lobby = io.of('/lobby');
+
+lobby.on('connection', function(socket) {
+  console.log('IO /lobby');
+
   // when a user joins a room
-  socket.on('join room', function(data) {
+  socket.on('join lobby', function(data) {
+    var server = ServerManager.getServer(data.room);
     // check if server exists
-    if (!ServerManager.getServer(data.room)) {
+    if (!server) {
       console.error("Unable to find room");
       return;
     }
 
-    // check server status to see if we can join
-    // if (servers[data.room].status > 1) {
-    //   return;
-    // }
+    // Check server status to see if we can join
+    if (server.status >= 1) {
+      var data = {};
+      data.id = server.id;
+      data.status = server.status;
+      data.name = server.name;
+      data.location = server.location;
+      data.ip = server.ip;
+      data.port = server.port;
+
+      socket.emit("live", data);
+      return;
+    }
 
     var payload = {
       displayName: data.displayName,
@@ -234,11 +260,13 @@ io.on('connection', function(socket) {
     // Set the current room this player is in
     PlayerManager.players[socket.playerId] = data.room;
 
-    io.sockets.to(data.room).emit("player joined", payload);
+    lobby.to(data.room).emit("player joined", payload);
 
     socket.updateRoomInfo();
   });
 
+  // A player hit the ready button, set them as ready and increment the readyCount.
+  // When there is 10, we emit the start match event to sockets a long with connection info.
   socket.on('player ready', function() {
     console.log(socket.playerId, "is ready");
     var readyCount = 0; 
@@ -264,13 +292,19 @@ io.on('connection', function(socket) {
       }
     }
 
-    console.log(readyCount, "players are ready");
 
+    // Send match info when all are ready
+    // TOOD set to equals only in case more than 10
     if (readyCount >= server.READYLIMIT) {
       // socket.updateRoomInfo();
-      console.log("all players ready!")    
-      
-      io.sockets.to(socket.currentRoom).emit("start match", server.getConnectionInfo());
+      console.info("all players ready!");
+
+      server.status = 1;
+
+      socket.updateRoomInfo();
+      lobby.to(socket.currentRoom).emit("start match", server.getConnectionInfo());
+    } else {
+      console.info(readyCount, "players are ready");
     }
   });
 
@@ -285,8 +319,11 @@ io.on('connection', function(socket) {
     // Remove user from PlayerManager
     PlayerManager.removePlayer(socket.playerId);
 
+    // Reset ready property for users
+    server.playerReadyReset();
+
     // Broadcast player leave event to room
-    io.sockets.to(socket.currentRoom).emit("player left", socket.playerId);
+    lobby.to(socket.currentRoom).emit("player left", socket.playerId);
 
     // Broadcast room update
     socket.updateRoomInfo();
@@ -301,7 +338,17 @@ io.on('connection', function(socket) {
     info.players = server.players;
     info.playerCount = server.playerCount();
     info.ready = server.isReady();
+    info.status = server.status;
 
-    io.sockets.to(socket.currentRoom).emit("room update", info);
+    lobby.to(socket.currentRoom).emit("lobby update", info);
+
+    // update server list
+    home.emit("servers", ServerManager.getServerList());
   }
+});
+
+
+process.on('uncaughtException', function(err) {
+    // handle the error safely
+    console.log(err);
 });

@@ -6,28 +6,45 @@ block content
       img.nav-left(src="#{user.avatarSmall}")
       h5.nav-left #{user.displayName}
 
-    div(ng-switch="lobbyState" ng-cloak)
-      .row(ng-switch-when="lobby")
-          .six.columns
-            h4 Lobby #{name}
-            h5 <b>Location</b>: #{location}
-            h5 <b>Status</b>: {{server.ready}}
-            //- h5 <b>Experience</b>: n/a
-            button.button-primary(ng-show="server.ready" onclick="ready()") Ready
-          
-          .six.columns
-            h4 Players in Lobby ({{server.playerCount}}/10)
+    div(ng-switch="server.status" ng-cloak)
+      .row(ng-switch-when="0")
+        .six.columns
+          h3 #{name}
+          h5 <b>Location</b>: #{location}
+          h5 <b>Experience</b>: 
+          h5 <b>Status</b>: NOT LIVE
+          <br>
+          button.button.u-full-width(ng-hide="server.ready" disabled) Waiting for 10 players
+          button.button-primary.u-full-width(ng-show="server.ready" ng-click="ready()") Ready
+        
+        .six.columns
+          .u-pull-right
+            h5 <b>Players ({{server.playerCount}}/10)</b>: 
             ul.player-list
               li(ng-repeat="player in server.players")
-                span {{player.displayName}}
+                span(ng-class="player.ready && 'ready'") {{player.displayName}}
 
-      .row(ng-switch-when="live")
-        .twelve.columns
-          h4 Match Live
+      .row(ng-switch-when="1")
+        .six.columns
+          h3 #{name}
+          h5 <b>Location</b>: #{location}
+          h5 <b>Experience</b>: 
+          h5 <b>Status</b>: LIVE
+          //- h5 <b>Map</b>: 
+          //- h5 <b>Score</b>: 
+          <br>
+          button.button.u-full-width(disabled) PUG in progress
+
+        //- .six.columns
+        //-   .u-pull-right
+        //-     h5 <b>Players in server ({{server.playerCount}}/10)</b>: 
+        //-     ul.player-list
+        //-       li(ng-repeat="player in server.players")
+        //-         span(ng-class="player.ready && 'ready'") {{player.displayName}}
 
       .row(ng-switch-default)
         .twelve.columns
-          h4 Joining Lobby
+          h3 Joining Lobby
 
 block prepend scripts
   script.

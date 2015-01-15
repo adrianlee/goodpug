@@ -8,7 +8,7 @@ block content
 
     .row(ng-controller="serverListController")
       .twelve.columns
-        h4 Servers
+        h3 Lobbies
         table.u-full-width
           thead
             tr
@@ -30,9 +30,10 @@ block content
             //-         span Waiting For Players
             //-       else
             //-         span Match in Progress
-            tr(ng-repeat="server in servers")
+            tr(ng-repeat="server in servers" ng-click="joinRoom(server)")
               td {{server.name}}
               td {{server.location}}
               td {{server.rank}}
-              td {{server.players}}
-              td {{server.status}}
+              td {{server.players}}/10
+              td(ng-show="server.status == 0") NOT LIVE
+              td(ng-show="server.status == 1") LIVE

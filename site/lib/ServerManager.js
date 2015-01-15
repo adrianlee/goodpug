@@ -6,19 +6,33 @@ function ServerManager() {
 	this.servers = {};
 }
 
+// Get server by name
 ServerManager.prototype.getServer = function(name) {
 	return this.servers[name];
 }
 
+// Server list that is sent to clients for each update
+ServerManager.prototype.getServerList = function () {
+  var serverList = [];
+  var server = {};
+
+  for (var i in this.servers) {
+    server = {};
+    server.id = this.servers[i].id;
+    server.name = this.servers[i].name;
+    server.location = this.servers[i].location;
+    server.status = this.servers[i].status;
+    server.players = this.servers[i].players && Object.keys(this.servers[i].players).length;
+
+    serverList.push(server)
+  }
+
+  return serverList;
+}
+
+// Initalization to populate server list for the Server Manager
 ServerManager.prototype.init = function () {
   var self = this;
-
-  // request.get("localhost:5000/servers", function (err, res) {
-  //   if (err) return console.error(err);
-
-  //   console.log(res.body);
-  //   self.servers = res.body;
-  // });
 
   db.Server.find({}, function (err, docs) {
     console.log(docs);

@@ -25,6 +25,47 @@
 	background: #f5f5f5;
 }
 
+.player-list {
+  list-style: none;
+}
+
 .player-list b {
   color: #00FF7F;
+}
+
+.player-list li {
+  text-align: right;
+}
+
+.ready {
+  color: #38E038;
+  font-weight: 600;
+}
+
+.align-right {
+  text-align: right;
+}
+
+.button-disabled, .button-disabled:hover, .button-disabled:focus {
+  color: #fff;
+  background-color: #B1EAFF;
+  border-color: #B1EAFF;
+}
+
+h1, h2, h3, h4, h5 {
+  padding: 0;
+  margin-bottom: 5px;
+} 
+
+h3 {
+  font-size: 26px;
+}
+
+
+h4 {
+  font-size: 22px;
+}
+
+h5 {
+  font-size: 18px;
 }
