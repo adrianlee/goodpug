@@ -47,7 +47,6 @@ GoodPug.controller("lobbyController", function ($scope, $http) {
       //   }
       // }
 
-      
       $scope.$apply();
     });
 
@@ -72,4 +71,8 @@ GoodPug.controller("lobbyController", function ($scope, $http) {
     }
 
     join();
+});
+
+GoodPug.controller("serverListController", function ($scope) {
+  $scope.servers = {};
 });

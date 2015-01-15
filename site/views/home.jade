@@ -6,7 +6,7 @@ block content
       img.nav-left(src="#{user.avatarSmall}")
       h5.nav-left #{user && user.displayName}
 
-    .row
+    .row(ng-controller="serverListController")
       .twelve.columns
         h4 Servers
         table.u-full-width
@@ -18,26 +18,21 @@ block content
               th Players
               th Status
           tbody.pug-table
-            // tr(onclick="location.href='steam://connect/104.236.164.175:27015'")
-            each server in servers
-              tr(onclick="location.href='/r/#{server.name}'")
-                td= server.name
-                td= server.location
-                td n/a
-                td= Object.keys(server.players).length
-                  span /10
-                td
-                  if server.status == 0
-                    span Waiting For Players
-                  else
-                    span Match in Progress
-
-    .row
-      .twelve.columns
-        // h4 Global Chat
-          p
-            strong jun: 
-            | let's pug!
-          p
-            strong jun: 
-            | hello all
+            //- each server in servers
+            //-   tr(onclick="location.href='/r/#{server.id}'")
+            //-     td= server.name
+            //-     td= server.location
+            //-     td n/a
+            //-     td= Object.keys(server.players).length
+            //-       span /10
+            //-     td
+            //-       if server.status == 0
+            //-         span Waiting For Players
+            //-       else
+            //-         span Match in Progress
+            tr(ng-repeat="server in servers")
+              td {{server.name}}
+              td {{server.location}}
+              td {{server.rank}}
+              td {{server.players}}
+              td {{server.status}}

@@ -72,6 +72,7 @@ block content
               th Name
               th IP
               th Port
+              th Location
               th Status
               th Commands
           tbody.server-table
@@ -81,6 +82,7 @@ block content
                 td= server.name
                 td= server.ip
                 td= server.port
+                td= server.location
                 td= server.rcon
                 td
                   a(onclick="deleteServer('#{server.id}')") delete

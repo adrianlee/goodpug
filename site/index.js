@@ -72,20 +72,24 @@ app.use(function (req, res, next) {
 // site routes
 app.get('/', function (req, res) {
   if (req.isAuthenticated()) {
-
     var data = req.user;
 
     return res.render('home', ServerManager);
   }
+
   res.render('welcome');
 });
 
-app.get('/r/:roomid', ensureAuthenticated, function (req, res) {
-  if (!ServerManager.getServer(req.params.roomid)) {
+app.get('/servers', ensureAuthenticated, function (req, res) {
+  res.send(ServerManager.servers);
+});
+
+app.get('/r/:id', ensureAuthenticated, function (req, res) {
+  if (!ServerManager.getServer(req.params.id)) {
     return res.send("Room not found");
   }
 
-  res.render('room', ServerManager.getServer(req.params.roomid));
+  res.render('room', ServerManager.getServer(req.params.id));
 });
 
 app.get('/admin', ensureAuthenticated, function (req, res) {
@@ -184,7 +188,9 @@ var server = app.listen(3000, function() {
 });
 
 // Populate server
-ServerManager.servers["San Francisco 1"] = new Server({ name: "San Francisco 1" });
+// ServerManager.servers["San Francisco 1"] = new Server({ name: "San Francisco 1" });
+
+ServerManager.init();
 
 // socket.io
 var io = require('socket.io').listen(server);

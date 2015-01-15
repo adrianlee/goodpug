@@ -4,16 +4,16 @@ module.exports = Server;
 
 function Server(options) {
 	// room info
-	this.name = options.name;
-	this.players = {};
-	this.status = 0;
-	this.readyCount = 0;
-	this.location = "WEST";
+  this.status = 0;
+  this.players = {};
+  this.readyCount = 0;
 
-	// server info
-	this.ip = "104.236.164.175";
-	this.port = "27015";
-	this.password = "omg";
+  // server info
+  this.id = options._id;
+  this.name = options.name;
+  this.ip = options.ip;
+  this.port = options.port;
+  this.location = options.location;
 };
 
 Server.prototype.READYLIMIT = 2;

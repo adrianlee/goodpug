@@ -1,30 +1,77 @@
 var Server = require('./lib/server');
-var servers = [];
-var server = new Server();
+var DB = require("../site/database");
+
+// var SFO = new Server("SFO", "104.236.164.175", "27015", "123", "USWEST");
+
+var servers = {};
+
+function refreshServerList() {
+	DB.Server.find({}, function (err, docs) {
+		for (var i = 0, length = docs.length; i < length; i++) {
+			var server = docs[i];
+
+			if (!servers[server._id]) {
+				servers[server._id] = new Server(server.name, server.ip, server.port, server.rcon, server.location);
+			} else {
+				servers[server._id].name = server.name;
+				servers[server._id].ip = server.ip;
+				servers[server._id].port = server.port;
+				servers[server._id].rcon = server.rcon;
+				servers[server._id].location = server.location;
+			}
+		}
+		console.log(servers);
+	});
+}
+
+refreshServerList();
+
 /*
 1. get a list of servers from mongo
 2. create a new Server object for each server
 3. start log listener for each
 4. exec rcon to get state of server, 
 */
-/* server properties
 
-status: live, empty, warm up
-players: []
-team a: []
-team b: []
-match score:
-average rank
+// API
+var express = require('express');
+var app = express();
 
-*/
-/* server methods
+// returns a list of servers
+app.get('/servers', function(req, res) {
+	res.send(servers);
+});
 
-restart()
-exec(config)
-warmup(start/end)
-setPassword(random)
-getPassword()
-getPlayers()
-averageRank()
+// returns server info for id
+app.get('/servers/:id', function(req, res) {
+	if (!servers[req.params.id]) {
+		res.sendStatus(404)
+	} else {	
+		res.send(servers[req.params.id]);
+	}
+});
 
-*/
+// returns the rcon
+app.post('/rcon/:id', function(req, res) {
+	if (!servers[req.params.id]) {
+		res.sendStatus(404)
+	} else {
+		res.send(servers[req.params.id]);
+	}
+});
+
+app.get('/refresh', function(req, res) {
+	refreshServerList();
+	res.sendStatus(200);
+});
+
+app.listen(5000);
+
+// REPL
+var repl = require("repl");
+
+var replServer = repl.start({
+  prompt: "goodpug > ",
+});
+
+replServer.context.servers = servers;

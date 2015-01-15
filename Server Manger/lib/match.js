@@ -1,4 +1,4 @@
-module.exports = Server;
+module.exports = Match;
 
 var states = ["waiting", "live", "ended"];
 
@@ -17,5 +17,5 @@ Match.prototype.getStatus = function() {
 }
 
 Match.prototype.calculateRankAverage = function() {
-    // return this.status;
+    // return this.status;`
 }

@@ -30,7 +30,7 @@ Connection.prototype.connect = function (callback) {
 
 	// When we are connected to RCON
 	self.connection.on('connect', function() {
-	    console.log("Connection created", self.host, self.port);
+    // console.log("Connection created", self.host, self.port);
 
 		// Authenticate RCON password
 		var reqId = self.request(self.rconPassword, "SERVERDATA_AUTH");
@@ -38,21 +38,24 @@ Connection.prototype.connect = function (callback) {
 		// Register Event Listeners for the SERVERDATA_AUTH request.
 		self.once('-1', function(data) {
             self.removeAllListeners('1');
-            // cb.call(self, {code: 'WRONG_PASSWORD'});
-            console.log("wrong password");
+            callback("wrong password");
         });
 
         self.once(reqId, function(res) {
             self.removeAllListeners('-1');
-            // cb.call(self);
-            console.log("rcon password accepted");
-            callback();
+            callback(null, "rcon password accepted");
         });
 	});
 
 	self.connection.on('error', function(err) {
-	    console.log('TCP connection error', err);
+	    // console.log('TCP connection error', err);
+      self.connection = net.createConnection({ host: self.host, port: self.port });
 	});
+
+  self.connection.on('close', function(err) {
+      // console.log('TCP connection closed', err);
+      self.connection = net.createConnection({ host: self.host, port: self.port });
+  });
 
 	// Whenever we recieve data from the server emit an event using it's id field.
 	// Request id and Response id are the same.
@@ -121,5 +124,9 @@ Connection.prototype.getNextPacketId = function() {
 
     return self.packetId += 1;
 };
+
+Connection.prototype.close = function() {
+  this.connection.end();
+}
 	
 module.exports = Connection;
