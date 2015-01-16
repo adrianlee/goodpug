@@ -8,6 +8,7 @@ GoodPug.controller("lobbyController", function ($scope) {
     console.log("Joined Lobby");
     
     $scope.server = {};
+    $scope.server.status = -1;
 
     var socket = io("/lobby");
 

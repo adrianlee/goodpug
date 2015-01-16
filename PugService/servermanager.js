@@ -1,5 +1,5 @@
 var Server = require('./lib/server');
-var DB = require("../site/database");
+var DB = require("../Site/database");
 
 // var SFO = new Server("SFO", "104.236.164.175", "27015", "123", "USWEST");
 

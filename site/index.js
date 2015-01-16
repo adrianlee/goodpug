@@ -36,10 +36,15 @@ app.use(logger('dev'));
 
 // session
 app.use(session({
+    // store: new RedisStore({
+    //   host: "pub-redis-16323.us-east-1-2.4.ec2.garantiadata.com",
+    //   port: "16323",
+    //   pass: 123123123
+    // }),
     store: new RedisStore({
-      host: "pub-redis-16323.us-east-1-2.4.ec2.garantiadata.com",
-      port: "16323",
-      pass: 123123123
+      host: "bojap.com",
+      port: "6379",
+      pass: "01895v7nh10234985y19034v85vyb01945v8"
     }),
     secret: 'keyboard catz',
     resave: false,
@@ -200,7 +205,6 @@ var io = require('socket.io').listen(server);
 var home = io.of('/home');
 
 home.on('connection', function (socket) {
-  console.log('IO /home');
   socket.on('servers', function (data) {
     console.log(ServerManager.getServerList());
     home.emit("servers", ServerManager.getServerList());
@@ -210,8 +214,6 @@ home.on('connection', function (socket) {
 var lobby = io.of('/lobby');
 
 lobby.on('connection', function(socket) {
-  console.log('IO /lobby');
-
   // when a user joins a room
   socket.on('join lobby', function(data) {
     var server = ServerManager.getServer(data.room);

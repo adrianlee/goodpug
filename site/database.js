@@ -1,11 +1,12 @@
 // mongoose
 var mongoose = require('mongoose');
-// var mongoURI = "mongodb://goodpug:goodpug@widmore.mongohq.com:10010/pillbox";
-var mongoURI = "mongodb://goodpug:montreal123@ds050077.mongolab.com:50077/goodpug";
+// var mongoURI = "mongodb://goodpug:montreal123@ds050077.mongolab.com:50077/goodpug";
+var mongoURI = "mongodb://goodpug:123123123@ds039960.mongolab.com:39960/goodpug2";
+
 var db = mongoose.connection;
 
 db.on('connecting', function() {
-  // console.log('connecting to MongoDB...');
+  console.log('connecting to MongoDB...');
 });
 
 db.on('error', function(error) {
@@ -18,7 +19,7 @@ db.on('connected', function() {
 });
 
 db.once('open', function() {
-  // console.log('MongoDB connection opened!');
+  console.log('MongoDB connection opened!');
 });
 
 db.on('reconnected', function () {
