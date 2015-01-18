@@ -1,8 +1,6 @@
 var Server = require('./lib/server');
 var DB = require("../Site/database");
 
-// var SFO = new Server("SFO", "104.236.164.175", "27015", "123", "USWEST");
-
 var servers = {};
 
 function refreshServerList() {
@@ -75,3 +73,15 @@ var replServer = repl.start({
 });
 
 replServer.context.servers = servers;
+
+
+
+// REDIS
+var redis = require("redis");
+var client = redis.createClient();
+
+client.on("error", function (err) {
+    console.log("Error " + err);
+});
+
+// client.auth("somepass");
