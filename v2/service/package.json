@@ -1,0 +1,18 @@
+{
+  "name": "service",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "express": "^4.11.0",
+    "redis": "^0.12.1",
+    "socket.io": "^1.2.1",
+    "socket.io-redis": "^0.1.4"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}

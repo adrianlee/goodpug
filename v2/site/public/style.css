@@ -1,69 +1,3 @@
-/*------------------------------------*\
-    RESET
-\*------------------------------------*/
-/* http://meyerweb.com/eric/tools/css/reset/ 
-    v2.0b1 | 201101 
-    NOTE:WORK IN PROGRESS
-    USE WITH CAUTION AND TEST WITH ABANDON */
-
-html,body,div,span,applet,object,iframe,
-h1,h2,h3,h4,h5,h6,p,blockquote,pre,
-a,abbr,acronym,address,big,cite,code,
-del,dfn,em,img,ins,kbd,q,s,samp,
-small,strike,strong,sub,sup,tt,var,
-b,u,i,center,
-dl,dt,dd,ol,ul,li,
-fieldset,form,label,legend,
-table,caption,tbody,tfoot,thead,tr,th,td,
-article,aside,canvas,details,figcaption,figure,
-footer,header,hgroup,menu,nav,section,summary,
-time,mark,audio,video{
-    margin:0;
-    padding:0;
-    border:0;
-    outline:0;
-    font-size:100%;
-    font:inherit;
-    vertical-align:baseline;
-}
-/* HTML5 display-role reset for older browsers */
-article,aside,details,figcaption,figure,
-footer,header,hgroup,menu,nav,section{
-    display:block;
-}
-body{
-    line-height:1;
-}
-ol,ul{
-    list-style:none;
-}
-blockquote,q{
-    quotes:none;
-}
-blockquote:before,blockquote:after,
-q:before,q:after{
-    content:’’;
-    content:none;
-}
-/* remember to define visible focus styles! 
-:focus{
-    outline:?????;
-} */
-
-/* remember to highlight inserts somehow! */
-ins{
-    text-decoration:none;
-}
-del{
-    text-decoration:line-through;
-}
-
-table{
-    border-collapse:collapse;
-    border-spacing:0;
-}
-
-
 body {
   font-family: 'Open Sans', sans-serif;
   font-size: 14px;
@@ -75,27 +9,95 @@ a {
 
 .sidebar {
   position: fixed;
-  width: 220px;
+  width: 250px;
   top: 0;
   bottom: 0;
   left: 0;
-  background-color: #ededed;
-  color: #333;
-  border-right: 1px solid #ddd;
+  background-color: #2F3A4C;
+  color: #fff;
 }
 
 .sidebar .header {
-  padding: 10px 20px;
+  width: 100%;
+  padding: 12px 0;
+}
+
+.sidebar .header span {
+  display: block;
+  text-align: left;
   font-size: 1.5em;
-  background: #ddd;
-  font-weight: 600;
+  color: #fff;
+}
+
+.sidebar .nav {
+
 }
 
 .content {
   position: absolute;
   top: 0;
   bottom: 0;
-  left: 220px;
-  right: 0;
-  padding: 20px;
+  left: 250px;
+  max-width: 800px;
+  padding: 20px 40px;
+  background-color: #efefef;
 }
+
+.block {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: #fff;
+  z-index: 100;
+}
+
+
+h1, h2, h3, h4, h5 {
+  margin-top: 10px;
+  margin-bottom: 0px;
+}
+
+.pug {
+  background-color: #ededed;
+  padding: 10px;
+}
+
+.pugs-table > tbody > tr {
+  cursor: pointer;
+}
+
+
+/*SPINNER*/
+.sk-spinner-pulse.sk-spinner {
+  position: absolute;
+  bottom: 50%;
+  right: 50%;
+  width: 100px;
+  height: 100px;
+  margin: 0 auto;
+  background-color: #333;
+  border-radius: 100%;
+  -webkit-animation: sk-pulseScaleOut 2s infinite ease-in-out;
+          animation: sk-pulseScaleOut 2s infinite ease-in-out; }
+
+@-webkit-keyframes sk-pulseScaleOut {
+  0% {
+    -webkit-transform: scale(0);
+            transform: scale(0); }
+
+  100% {
+    -webkit-transform: scale(1);
+            transform: scale(1);
+    opacity: 0; } }
+
+@keyframes sk-pulseScaleOut {
+  0% {
+    -webkit-transform: scale(0);
+            transform: scale(0); }
+
+  100% {
+    -webkit-transform: scale(1);
+            transform: scale(1);
+    opacity: 0; } }
