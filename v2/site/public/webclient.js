@@ -15,7 +15,7 @@ app.config(function($routeProvider, $locationProvider, $httpProvider) {
         controller: 'oopsController'
     }).when('/pug/:id', {
         templateUrl: 'views/lobby.html',
-        controller: 'pugLobbyController',
+        controller: 'lobbyController',
         resolve: {
             pug: function($q, $route, apiFactory) {
                 var delay = $q.defer();
@@ -46,7 +46,7 @@ app.config(function($routeProvider, $locationProvider, $httpProvider) {
         templateUrl: 'views/pugs.html',
         controller: 'pugsController',
         resolve: {
-          profile: function($q, apiFactory, $location) {
+            profile: function($q, apiFactory, $location) {
                 var delay = $q.defer();
                 apiFactory.getProfile().success(function(profile) {
                     delay.resolve(profile);
@@ -67,36 +67,19 @@ app.config(function($routeProvider, $locationProvider, $httpProvider) {
 app.run(function($rootScope, $location, profileService, apiFactory, pugsFactory, lobbyFactory) {
     // // register listener to watch route changes
     $rootScope.$on("$routeChangeStart", function(event, next, current) {
-        // var originalPath = next.originalPath;
-        // if (!profileService.loggedIn) {
-        //     // if (next.templateUrl !== "views/login.html") {
-        //     //     $location.path("/login");
-        //     // }
-        //     apiFactory.getProfile().success(function(data) {
-        //         profileService.profile = data;
-        //         profileService.loggedIn = true;
-        //         if (data) {
-        //             $location.path(originalPath);
-        //         }
-        //     });
-        //     event.preventDefault();
-        // }
         if (pugsFactory.connected) {
             pugsFactory.disconnect();
         }
-
         if (lobbyFactory.connected) {
             lobbyFactory.disconnect();
         }
     });
-
     $rootScope.$on("$routeChangeError", function(event, next, current, rejection) {
         console.log("routeChangeError");
         if (rejection == 401) {
-          location.href = "/logout";
-          return;
+            location.href = "/logout";
+            return;
         };
-
         event.preventDefault();
         $location.path("/oops");
     });
@@ -116,7 +99,7 @@ app.controller('mainController', function($scope, apiFactory, profileService) {
 app.controller('homeController', function() {});
 app.controller('loginController', function() {});
 app.controller('logoutController', function() {
-  location.href = "/logout";
+    location.href = "/logout";
 });
 app.controller('oopsController', function() {});
 app.controller('profileController', function($scope, profile) {
@@ -137,11 +120,13 @@ app.controller('pugsController', function($scope, $location, apiFactory, pugsFac
         $location.path("/pug/" + pug.id);
     };
 });
-app.controller('pugLobbyController', function($scope, $routeParams, pug, lobbyFactory) {
+app.controller('lobbyController', function($scope, $routeParams, pug, lobbyFactory) {
     $scope.pug = pug;
     if (!lobbyFactory.connected) {
-        lobbyFactory.connect();
+        lobbyFactory.connect(pug.id);
     }
+
+    // lobbyFactory.socket.emit("ready");
 });
 // factories
 app.factory('apiFactory', function($http, ENV) {
@@ -188,7 +173,7 @@ app.factory('lobbyFactory', function(ENV) {
     var lobby = {};
     var socket;
     lobby.connected = false;
-    lobby.connect = function() {
+    lobby.connect = function(pugId) {
         if (socket) {
             return socket.connect();
         }
@@ -197,17 +182,21 @@ app.factory('lobbyFactory', function(ENV) {
         });
         socket.on('connect', function() {
             lobby.connected = true;
-        });
-        socket.on('news', function(data) {
-            console.log(data);
-            socket.emit('my other event', {
-                my: 'data'
+            socket.emit("join", {
+                id: pugId
             });
+        });
+        // lobby info update
+        socket.on('update', function(data) {
+            console.log(data);
         });
     }
     lobby.disconnect = function() {
         socket.disconnect();
         lobby.connected = false;
+    }
+    lobby.ready = function () {
+      socket.emit("ready");
     }
     return lobby;
 });
@@ -221,5 +210,5 @@ app.service('profileService', function() {
 });
 // constants
 app.constant('ENV', {
-  'serviceEndpoint': 'http://localhost:4000'
+    'serviceEndpoint': 'http://localhost:4000'
 });
