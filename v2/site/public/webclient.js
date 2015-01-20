@@ -1,19 +1,15 @@
 var app = angular.module('Pug', ['ngRoute']);
 // config
 app.config(function($routeProvider, $locationProvider, $httpProvider) {
-    var resolve = {
-        delay: function($q) {
-            var delay = $q.defer();
-            setTimeout(delay.resolve, 1000);
-            return delay.promise;
-        }
-    };
     $routeProvider.when('/', {
         templateUrl: 'views/home.html',
         controller: 'homeController'
     }).when('/login', {
         templateUrl: 'views/login.html',
         controller: 'loginController'
+    }).when('/logout', {
+        templateUrl: 'views/logout.html',
+        controller: 'logoutController'
     }).when('/oops', {
         templateUrl: 'views/oops.html',
         controller: 'oopsController'
@@ -25,8 +21,9 @@ app.config(function($routeProvider, $locationProvider, $httpProvider) {
                 var delay = $q.defer();
                 apiFactory.getPug($route.current.params && $route.current.params.id).success(function(pug) {
                     delay.resolve(pug);
-                }).error(function() {
-                    delay.reject();
+                }).error(function(err) {
+                    console.err(err);
+                    delay.reject(err);
                 });
                 return delay.promise;
             }
@@ -39,15 +36,26 @@ app.config(function($routeProvider, $locationProvider, $httpProvider) {
                 var delay = $q.defer();
                 apiFactory.getProfile().success(function(profile) {
                     delay.resolve(profile);
-                }).error(function() {
-                    delay.reject();
+                }).error(function(err, status) {
+                    delay.reject(status);
                 });
                 return delay.promise;
             }
         }
     }).when('/pugs', {
         templateUrl: 'views/pugs.html',
-        controller: 'pugsController'
+        controller: 'pugsController',
+        resolve: {
+          profile: function($q, apiFactory, $location) {
+                var delay = $q.defer();
+                apiFactory.getProfile().success(function(profile) {
+                    delay.resolve(profile);
+                }).error(function(err, status) {
+                    delay.reject(status);
+                });
+                return delay.promise;
+            }
+        }
     }).otherwise({
         redirectTo: '/'
     });
@@ -82,8 +90,13 @@ app.run(function($rootScope, $location, profileService, apiFactory, pugsFactory,
         }
     });
 
-    $rootScope.$on("$routeChangeError", function(event, next, current) {
+    $rootScope.$on("$routeChangeError", function(event, next, current, rejection) {
         console.log("routeChangeError");
+        if (rejection == 401) {
+          location.href = "/logout";
+          return;
+        };
+
         event.preventDefault();
         $location.path("/oops");
     });
@@ -100,9 +113,12 @@ app.controller('mainController', function($scope, apiFactory, profileService) {
         if (!data) profileService.forceLogin()
     });
 });
-app.controller('homeController', function($scope) {});
-app.controller('loginController', function($scope) {});
-app.controller('oopsController', function($scope) {});
+app.controller('homeController', function() {});
+app.controller('loginController', function() {});
+app.controller('logoutController', function() {
+  location.href = "/logout";
+});
+app.controller('oopsController', function() {});
 app.controller('profileController', function($scope, profile) {
     $scope.profile = profile || {};
 });
@@ -120,11 +136,6 @@ app.controller('pugsController', function($scope, $location, apiFactory, pugsFac
         console.log("pug lobby clicked");
         $location.path("/pug/" + pug.id);
     };
-    // var socket = io.connect('http://localhost:4000');
-    // socket.on('news', function (data) {
-    //     console.log(data);
-    //     socket.emit('my other event', { my: 'data' });
-    // });
 });
 app.controller('pugLobbyController', function($scope, $routeParams, pug, lobbyFactory) {
     $scope.pug = pug;
