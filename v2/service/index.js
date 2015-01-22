@@ -44,3 +44,12 @@ app.get('/pug/:id', function(req, res) {
 
 var server = app.listen(4000);
 var ws = require("./websocket")(server);
+
+var redis = require('redis');
+
+var client = redis.createClient(6379, 'bojap.com', {
+    auth_pass: "01895v7nh10234985y19034v85vyb01945v8"
+});
+
+client.hset("n13957f1-095f-1057b-1gn3j", "status", 0);
+client.hget("n13957f1-095f-1057b-1gn3j", "status", redis.print);

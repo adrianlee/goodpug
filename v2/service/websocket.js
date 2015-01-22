@@ -38,7 +38,7 @@ module.exports = function(server) {
             socket.join(data && data.id);
 
             // update lobby
-            lobby.to(socket.pugId).emit('update', {asd:"asd"});
+            lobby.to(socket.pugId).emit('update', { asd: "asd" });
         });
         // a user is ready
         socket.on('ready', function () {
