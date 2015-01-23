@@ -1,3 +1,8 @@
+// redis
+var redis = require('redis');
+var r = redis.createClient(6379, 'bojap.com', {
+    auth_pass: "01895v7nh10234985y19034v85vyb01945v8"
+});
 // log reader
 var dgram = require('dgram')
 var server = dgram.createSocket('udp4');
@@ -17,17 +22,76 @@ server.on("close", function() {
     console.log("closed");
 });
 server.bind(5000);
+// patterns
+var pKill = new RegExp('^"(.+)[<](\\d+)[>][<](.*)[>][<](CT|TERRORIST|Unassigned|Spectator)[>]" \\[([\\-]?[0-9]+) ([\\-]?[0-9]+) ([\\-]?[0-9]+)\\] killed "(.+)[<](\\d+)[>][<](.*)[>][<](CT|TERRORIST|Unassigned|Spectator)[>]" \\[([\\-]?[0-9]+) ([\\-]?[0-9]+) ([\\-]?[0-9]+)\\] with "([a-zA-Z0-9_]+)"(.*)');
+var pKillAssist = new RegExp('^"(.+)[<](\\d+)[>][<](.*)[>][<](CT|TERRORIST|Unassigned|Spectator)[>]" assisted killing "(.+)[<](\\d+)[>][<](.*)[>][<](CT|TERRORIST|Unassigned|Spectator)[>]"');
+var pConnected = new RegExp('^"(.+)[<](\\d+)[>][<](.*)[>][<][>]" connected, address "(.*)"');
+var pDisconnected = new RegExp('^"(.+)[<](\\d+)[>][<](.*)[>][<](CT|TERRORIST|Unassigned|Spectator)[>]" disconnected');
+var pEnteredGame = new RegExp('/^"(.+)[<](\\d+)[>][<](.*)[>][<][>]" entered the game/');
+var pJoinedTeam = new RegExp('^"(.+)[<](\\d+)[>][<](.*)[>][<](CT|TERRORIST|Unassigned|Spectator)[>]" joined team "(CT|TERRORIST|Unassigned|Spectator)"');
+var pRoundStart = new RegExp('^World triggered "Round_Start"');
+var pRoundEnd = new RegExp('^World triggered "Round_End"');
+var pRoundRestart = new RegExp('!World triggered "Restart_Round_\\((\\d+)_(second|seconds)\\)"!');
+var pRoundScore = new RegExp('^Team "(.*)" triggered "SFUI_Notice_(Terrorists_Win|CTs_Win|Target_Bombed|Target_Saved|Bomb_Defused)');
+var pSay = new RegExp('^"(.+)[<](\\d+)[>][<](.*)[>][<](CT|TERRORIST|Unassigned|Spectator)[>]" say "(.*)"');
+var pSayTeam = new RegExp('^"(.+)[<](\\d+)[>][<](.*)[>][<](CT|TERRORIST|Unassigned|Spectator)[>]" say_team "(.*)"');
+var pSwitchTeam = new RegExp('^"(.+)[<](\\d+)[>][<](.*)[>]" switched from team [<](CT|TERRORIST|Unassigned|Spectator)[>] to [<](CT|TERRORIST|Unassigned|Spectator)[>]');
+var pScored = new RegExp('^Team "(CT|TERRORIST)" scored "(\\d+)" with "(\\d+)" players');
 // log parser
 function parseMessage(rinfo, msg) {
-    console.log(rinfo.address, rinfo.port);
+    // console.log(rinfo.address, rinfo.port);
     var split = msg.split(": ");
     var timestamp = split[0];
     var log = split[1];
     var extra = split[2];
-    console.log(log, extra);
+    var res;
+    // console.log(log, extra);
+
+    // test patterns
+    if (pKill.test(log)) {
+        res = pKill.exec(log);
+        console.log(res);
+        // name, userid, steamid, team, location_x, location_y, location_z, name, userid, steamid, team, location_x, location_y, location_z, weapon, headshot
+
+    } else if (pKillAssist.test(log)) {
+        res = pKillAssist.exec(log);
+        console.log(res);
+    } else if (pConnected.test(log)) {
+        res = pConnected.exec(log);
+        console.log(res);
+    } else if (pDisconnected.test(log)) {
+        res = pDisconnected.exec(log);
+        console.log(res);
+    } else if (pEnteredGame.test(log)) {
+        res = pEnteredGame.exec(log);
+        console.log(res);
+    } else if (pJoinedTeam.test(log)) {
+        res = pJoinedTeam.exec(log);
+        console.log(res);
+    } else if (pRoundStart.test(log)) {
+        res = pRoundStart.exec(log);
+        console.log(res);
+    } else if (pRoundEnd.test(log)) {
+        res = pRoundEnd.exec(log);
+        console.log(res);
+    } else if (pRoundScore.test(log)) {
+        res = pRoundScore.exec(log);
+        console.log(res);
+    } else if (pSay.test(log)) {
+        res = pSay.exec(log);
+        console.log(res);
+    } else if (pSayTeam.test(log)) {
+        res = pSayTeam.exec(log);
+        console.log(res);
+    } else if (pSwitchTeam.test(log)) {
+        res = pSwitchTeam.exec(log);
+        console.log(res);
+    } else if (pScored.test(log)) {
+        res = pScored.exec(log);
+        console.log(res);
+    }
 }
 
-/*
 // WORLD
 World triggered "Game_Commencing"
 World triggered "Round_Start"
@@ -76,3 +140,5 @@ Team "TERRORIST" scored "0" with "5" players
 Team "CT" scored "0" with "5" players
 Team "TERRORIST" scored "1" with "5" players
 */
+
+// ^"(?<user_name>.+)[<](?<user_id>\d+)[>][<](?<steam_id>.*)[>][<](?<user_team>CT|TERRORIST|Unassigned|Spectator)[>]" \[(?<killer_x>[\-]?[0-9]+) (?<killer_y>[\-]?[0-9]+) (?<killer_z>[\-]?[0-9]+)\] killed "(?<killed_user_name>.+)[<](?<killed_user_id>\d+)[>][<](?<killed_steam_id>.*)[>][<](?<killed_user_team>CT|TERRORIST|Unassigned|Spectator)[>]" \[(?<killed_x>[\-]?[0-9]+) (?<killed_y>[\-]?[0-9]+) (?<killed_z>[\-]?[0-9]+)\] with "(?<weapon>[a-zA-Z0-9_]+)"(?<headshot>.*)
