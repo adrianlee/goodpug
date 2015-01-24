@@ -52,7 +52,7 @@ function parseMessage(rinfo, msg) {
         res = pKill.exec(log);
         console.log(res);
         // name, userid, steamid, team, location_x, location_y, location_z, name, userid, steamid, team, location_x, location_y, location_z, weapon, headshot
-
+        //r.hset("server:" + rinfo.address + ":" rinfo.port, "")
     } else if (pKillAssist.test(log)) {
         res = pKillAssist.exec(log);
         console.log(res);
@@ -91,7 +91,8 @@ function parseMessage(rinfo, msg) {
         console.log(res);
     }
 }
-
+// LOG EXAMPLES
+/*
 // WORLD
 World triggered "Game_Commencing"
 World triggered "Round_Start"
@@ -140,5 +141,3 @@ Team "TERRORIST" scored "0" with "5" players
 Team "CT" scored "0" with "5" players
 Team "TERRORIST" scored "1" with "5" players
 */
-
-// ^"(?<user_name>.+)[<](?<user_id>\d+)[>][<](?<steam_id>.*)[>][<](?<user_team>CT|TERRORIST|Unassigned|Spectator)[>]" \[(?<killer_x>[\-]?[0-9]+) (?<killer_y>[\-]?[0-9]+) (?<killer_z>[\-]?[0-9]+)\] killed "(?<killed_user_name>.+)[<](?<killed_user_id>\d+)[>][<](?<killed_steam_id>.*)[>][<](?<killed_user_team>CT|TERRORIST|Unassigned|Spectator)[>]" \[(?<killed_x>[\-]?[0-9]+) (?<killed_y>[\-]?[0-9]+) (?<killed_z>[\-]?[0-9]+)\] with "(?<weapon>[a-zA-Z0-9_]+)"(?<headshot>.*)

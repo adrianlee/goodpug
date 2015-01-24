@@ -1,2 +1,20 @@
 <h3>{{::pug.name}}</h3>
-{{pug}}
+
+<h5>Location</h5>
+<b>{{::pug.location}}</b>
+
+<h5>Status</h5>
+<b ng-show="pug.status == 0">NOT LIVE</b>
+<b ng-show="pug.status == 1">LIVE</b>
+
+<h5>Players</h5>
+<b>{{::pug.players}}</b>
+
+<h5>Actions</h5>
+<button class="button-primary">Join lobby</button>
+<button class="button-primary">Ready up</button>
+<button class="button-primary">Join server</button>
+
+<hr>
+
+{{::pug}}
