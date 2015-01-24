@@ -24,6 +24,7 @@ app.get('/pugs', function(req, res) {
 app.get('/pug/:id', function(req, res) {
   broker.getPug(req.params.id, function (err, pug) {
     if (err) return res.sendStatus(500);
+    if (!pug) return res.sendStatus(404);
     res.send(pug);
   });
 });

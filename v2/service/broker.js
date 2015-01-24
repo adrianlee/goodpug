@@ -11,11 +11,10 @@ Broker.prototype.init = function () {
     client.set("server:n13957f1-095f-1057b-1gn3j:port", "27015");
     client.set("server:n13957f1-095f-1057b-1gn3j:location", "USWEST");
     client.set("server:n13957f1-095f-1057b-1gn3j:status", 0);
-    // client.del("server:n13957f1-095f-1057b-1gn3j:players");
-    client.sadd("server:n13957f1-095f-1057b-1gn3j:players", "irok", "cesar", "ynot", "rich");
+    client.del("server:n13957f1-095f-1057b-1gn3j:players");
+    // client.sadd("server:n13957f1-095f-1057b-1gn3j:players", "irok", "cesar", "ynot", "rich");
 }
 Broker.prototype.getPug = function(serverId, callback) {
-    console.log(serverId);
     // Fetch pug info & status from redis
     async.parallel({
         info: function(cb) {
@@ -37,7 +36,6 @@ Broker.prototype.getPug = function(serverId, callback) {
         }
     }, function(err, results) {
         var server = {};
-
         server.id = results.info[0];
         server.name = results.info[1];
         server.ip = results.info[2];
@@ -45,6 +43,11 @@ Broker.prototype.getPug = function(serverId, callback) {
         server.location = results.info[4];
         server.status = results.info[5];
         server.players = results.players;
+
+        if (!server.id && !server.ip) {
+          return callback(err, null);
+        }
+
         callback(err, server);
     });
 }

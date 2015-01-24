@@ -21,8 +21,8 @@ app.config(function($routeProvider, $locationProvider, $httpProvider) {
                 var delay = $q.defer();
                 apiFactory.getPug($route.current.params && $route.current.params.id).success(function(pug) {
                     delay.resolve(pug);
-                }).error(function(err) {
-                    console.err(err);
+                }).error(function(err, status) {
+                    console.log(status);
                     delay.reject(err);
                 });
                 return delay.promise;
@@ -120,12 +120,16 @@ app.controller('pugsController', function($scope, $location, apiFactory, pugsFac
         $location.path("/pug/" + pug.id);
     };
 });
-app.controller('lobbyController', function($scope, $routeParams, pug, lobbyFactory) {
+app.controller('lobbyController', function($scope, pug, lobbyFactory) {
     $scope.pug = pug;
-    if (!lobbyFactory.connected) {
+    console.log(pug);
+    if (pug && !lobbyFactory.connected) {
         lobbyFactory.connect(pug.id);
     }
-
+    lobbyFactory.socket().on("update", function(data) {
+        $scope.pug = data;
+        $scope.$apply();
+    });
     // lobbyFactory.socket.emit("ready");
 });
 // factories
@@ -156,12 +160,6 @@ app.factory('pugsFactory', function(ENV) {
         socket.on('connect', function() {
             pugs.connected = true;
         });
-        socket.on('news', function(data) {
-            console.log(data);
-            socket.emit('my other event', {
-                my: 'data'
-            });
-        });
     }
     pugs.disconnect = function() {
         socket.disconnect();
@@ -187,16 +185,19 @@ app.factory('lobbyFactory', function(ENV) {
             });
         });
         // lobby info update
-        socket.on('update', function(data) {
-            console.log(data);
-        });
+        // socket.on('update', function(data) {
+        //     console.log(data);
+        // });
     }
     lobby.disconnect = function() {
         socket.disconnect();
         lobby.connected = false;
     }
-    lobby.ready = function () {
-      socket.emit("ready");
+    lobby.ready = function() {
+        socket.emit("ready");
+    }
+    lobby.socket = function() {
+        return socket;
     }
     return lobby;
 });
