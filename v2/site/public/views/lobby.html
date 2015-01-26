@@ -1,8 +1,8 @@
 <div ng-show="full">
-  pug is full
+    pug is full
 </div>
 <div ng-hide="pug">
-  pug not found
+    pug not found
 </div>
 <div ng-show="pug">
     <h3>{{::pug.name}}</h3>
@@ -11,6 +11,7 @@
     <h5>Status</h5>
     <b ng-show="pug.status == 0">NOT LIVE</b>
     <b ng-show="pug.status == 1">LIVE</b>
+    <b ng-show="pug.status == null">UNKNOWN</b>
     <h5>Players</h5>
     <b>{{pug.players}}</b>
     <h5>Actions</h5>

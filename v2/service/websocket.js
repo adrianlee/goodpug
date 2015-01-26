@@ -38,14 +38,17 @@ module.exports = function(server) {
             });
         });
         socket.on('lobby leave', function() {
+            if (!socket.currentLobbyId) return;
             console.log(socket.displayName, "leave lobby", socket.currentLobbyId);
             // remove user from redis
             var key = ["server", socket.currentLobbyId, "players"].join(":");
             client.srem(key, socket.displayName, redis.print);
             // update lobby
-            updateLobbyAndBrowser();
-            socket.currentLobbyId = null;
-            socket.leave(socket.currentLobbyId);
+            updateLobbyAndBrowser(function() {
+                // dispose
+                socket.leave(socket.currentLobbyId);
+                socket.currentLobbyId = null;
+            });
         });
         // browser
         socket.on('browser join', function() {
@@ -60,13 +63,20 @@ module.exports = function(server) {
             // update redis
             var key = ["server", socket.currentLobbyId, "players"].join(":");
             client.srem(key, socket.displayName, redis.print);
+            // update lobby
+            updateLobbyAndBrowser(function() {
+                // dispose
+                socket.leave(socket.currentLobbyId);
+                socket.currentLobbyId = null;
+            });
         });
         // helper functions
-        function updateLobbyAndBrowser() {
+        function updateLobbyAndBrowser(callback) {
             if (!socket.currentLobbyId) return;
             broker.getPug(socket.currentLobbyId, function(err, pug) {
+                console.log(socket.currentLobbyId, pug);
                 if (err) return console.error(err);
-                if (pug && pug.id) {
+                if (pug) {
                     // update room
                     pugs.to(socket.currentLobbyId).emit('lobby update', pug);
                     // update pugs list
@@ -75,6 +85,9 @@ module.exports = function(server) {
                         players: pug.players,
                         status: pug.status
                     });
+                }
+                if (callback) {
+                    callback();
                 }
             });
         }

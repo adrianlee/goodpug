@@ -15,6 +15,7 @@
             <td>{{pug.players | getCount}}</td>
             <td ng-show="pug.status == 0">NOT LIVE</td>
             <td ng-show="pug.status == 1">LIVE</td>
+            <td ng-show="pug.status == null">UNKNOWN</td>
         </tr>
     </tbody>
 </table>

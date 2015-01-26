@@ -19,7 +19,7 @@
             <div class="sidebar">
                 <div class="container">
                     <div class="header"><a href="/"><span>Goodpug</span></a></div>
-                    <a href="/pugs">FIND A PUG</a><br>
+                    <!-- <a href="/pugs">FIND A PUG</a><br> -->
                     <a href="/me">PROFILE</a><br>
                     <a href="/admin">ADMIN</a><br>
                     <a href="/logout">LOGOUT</a>
@@ -30,6 +30,10 @@
                 <div ng-view></div>
             </div>
         </div>
+        <!-- TEMPLATES -->
+        <script type="text/ng-template" id="oops.html">
+            Oops, something went wrong.
+        </script>
         <!-- SCRIPTS -->
         <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
         <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.2.1/socket.io.min.js"></script>

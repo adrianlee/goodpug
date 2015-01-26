@@ -2,8 +2,32 @@ var app = angular.module('Pug', ['ngRoute']);
 // config
 app.config(function($routeProvider, $locationProvider, $httpProvider) {
     $routeProvider.when('/', {
-        templateUrl: 'views/home.html',
-        controller: 'homeController'
+        templateUrl: 'views/pugs.html',
+        controller: 'pugsController',
+        resolve: {
+            pugs: function($q, apiFactory) {
+                var delay = $q.defer();
+                apiFactory.getPugs().success(function(data) {
+                    var pugs = {};
+                    for (var i = 0; i < data.length; i++) {
+                        pugs[data[i].id] = data[i];
+                    }
+                    delay.resolve(pugs);
+                }).error(function(err, status) {
+                    delay.reject(status);
+                });
+                return delay.promise;
+            },
+            profile: function($q, apiFactory) {
+                var delay = $q.defer();
+                apiFactory.getProfile().success(function(profile) {
+                    delay.resolve(profile);
+                }).error(function(err, status) {
+                    delay.reject(status);
+                });
+                return delay.promise;
+            }
+        }
     }).when('/login', {
         templateUrl: 'views/login.html',
         controller: 'loginController'
@@ -11,7 +35,7 @@ app.config(function($routeProvider, $locationProvider, $httpProvider) {
         templateUrl: 'views/logout.html',
         controller: 'logoutController'
     }).when('/oops', {
-        templateUrl: 'views/oops.html',
+        templateUrl: 'oops.html',
         controller: 'oopsController'
     }).when('/admin', {
         templateUrl: 'views/admin.html',
@@ -170,6 +194,7 @@ app.controller('lobbyController', function($scope, pug, serviceFactory, profileS
     };
     var updateLobby = function() {
         // update pug info if joined
+        console.log(serviceFactory.currentLobby);
         if (serviceFactory.currentLobby) {
             $scope.pug = serviceFactory.currentLobby;
         }
@@ -215,15 +240,11 @@ app.factory('serviceFactory', function(ENV) {
             id: pugId,
             displayName: profile.displayName
         });
-
-        // set current lobby
-        service.currentLobby = pugId;
     };
     service.lobbyLeave = function() {
         // leave
         console.log("lobby leave", service.currentLobby);
         socket.emit("lobby leave");
-
         // set current lobby
         service.currentLobby = null;
     };
