@@ -12,7 +12,7 @@
         <tr ng-repeat="(key, pug) in pugs" ng-click="join(pug)">
             <td>{{::pug.name}}</td>
             <td>{{::pug.location}}</td>
-            <td>{{pug.players}}</td>
+            <td>{{pug.players | getCount}}</td>
             <td ng-show="pug.status == 0">NOT LIVE</td>
             <td ng-show="pug.status == 1">LIVE</td>
         </tr>

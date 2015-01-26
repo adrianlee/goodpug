@@ -13,6 +13,20 @@ app.config(function($routeProvider, $locationProvider, $httpProvider) {
     }).when('/oops', {
         templateUrl: 'views/oops.html',
         controller: 'oopsController'
+    }).when('/admin', {
+        templateUrl: 'views/admin.html',
+        controller: 'adminController',
+        resolve: {
+            profile: function($q, apiFactory) {
+                var delay = $q.defer();
+                apiFactory.getProfile().success(function(profile) {
+                    delay.resolve(profile);
+                }).error(function(err, status) {
+                    delay.reject(status);
+                });
+                return delay.promise;
+            }
+        }
     }).when('/pug/:id', {
         templateUrl: 'views/lobby.html',
         controller: 'lobbyController',
@@ -32,7 +46,7 @@ app.config(function($routeProvider, $locationProvider, $httpProvider) {
         templateUrl: 'views/profile.html',
         controller: 'profileController',
         resolve: {
-            profile: function($q, apiFactory, $location) {
+            profile: function($q, apiFactory) {
                 var delay = $q.defer();
                 apiFactory.getProfile().success(function(profile) {
                     delay.resolve(profile);
@@ -46,7 +60,20 @@ app.config(function($routeProvider, $locationProvider, $httpProvider) {
         templateUrl: 'views/pugs.html',
         controller: 'pugsController',
         resolve: {
-            profile: function($q, apiFactory, $location) {
+            pugs: function($q, apiFactory) {
+                var delay = $q.defer();
+                apiFactory.getPugs().success(function(data) {
+                    var pugs = {};
+                    for (var i = 0; i < data.length; i++) {
+                        pugs[data[i].id] = data[i];
+                    }
+                    delay.resolve(pugs);
+                }).error(function(err, status) {
+                    delay.reject(status);
+                });
+                return delay.promise;
+            },
+            profile: function($q, apiFactory) {
                 var delay = $q.defer();
                 apiFactory.getProfile().success(function(profile) {
                     delay.resolve(profile);
@@ -64,15 +91,15 @@ app.config(function($routeProvider, $locationProvider, $httpProvider) {
     delete $httpProvider.defaults.headers.common['X-Requested-With'];
 });
 // run
-app.run(function($rootScope, $location, profileService, apiFactory, pugsFactory, lobbyFactory) {
+app.run(function($rootScope, $location, profileService, apiFactory) {
     // // register listener to watch route changes
     $rootScope.$on("$routeChangeStart", function(event, next, current) {
-        if (pugsFactory.connected) {
-            pugsFactory.disconnect();
-        }
-        if (lobbyFactory.connected) {
-            lobbyFactory.disconnect();
-        }
+        // if (pugsFactory.connected) {
+        //     pugsFactory.disconnect();
+        // }
+        // if (lobbyFactory.connected) {
+        //     // lobbyFactory.leave();
+        // }
     });
     $rootScope.$on("$routeChangeError", function(event, next, current, rejection) {
         console.log("routeChangeError");
@@ -105,34 +132,157 @@ app.controller('oopsController', function() {});
 app.controller('profileController', function($scope, profile) {
     $scope.profile = profile || {};
 });
-app.controller('pugsController', function($scope, $location, apiFactory, pugsFactory) {
-    $scope.pugs = {};
-    apiFactory.getPugs().success(function(data) {
-        $scope.pugs = data;
+app.controller('adminController', function($scope, profile) {});
+app.controller('pugsController', function($scope, $location, apiFactory, serviceFactory, pugs) {
+    $scope.pugs = pugs || {};
+    serviceFactory.lobbies = pugs;
+    serviceFactory.browserJoin();
+    $scope.$on("$destroy", function() {
+        serviceFactory.browserLeave();
     });
-    if (!pugsFactory.connected) {
-        pugsFactory.connect();
-    } else {
-        console.log("pugsFactory.connected", pugsFactory.connected)
-    }
+    // scope functions
     $scope.join = function(pug) {
-        console.log("pug lobby clicked");
         $location.path("/pug/" + pug.id);
     };
-});
-app.controller('lobbyController', function($scope, pug, lobbyFactory) {
-    $scope.pug = pug;
-    console.log(pug);
-    if (pug && !lobbyFactory.connected) {
-        lobbyFactory.connect(pug.id);
-    }
-    lobbyFactory.socket().on("update", function(data) {
-        $scope.pug = data;
+    // observer
+    var updatePugs = function() {
+        // update pugs
+        if (serviceFactory.lobbies) {
+            $scope.pugs = serviceFactory.lobbies;
+        }
         $scope.$apply();
+    };
+    serviceFactory.registerObserverCallback(updatePugs);
+});
+app.controller('lobbyController', function($scope, pug, serviceFactory, profileService) {
+    $scope.pug = pug;
+    serviceFactory.lobbyJoin(pug.id, profileService.profile);
+    $scope.$on("$destroy", function() {
+        serviceFactory.lobbyLeave();
     });
-    // lobbyFactory.socket.emit("ready");
+    $scope.join = function() {
+        for (var i in $scope.pug.players) {
+            if ($scope.pug.players[i] == profileService.profile.displayName) {
+                return console.log("already joined");
+            }
+        }
+        serviceFactory.lobbyJoin(pug.id, profileService.profile);
+    };
+    var updateLobby = function() {
+        // update pug info if joined
+        if (serviceFactory.currentLobby) {
+            $scope.pug = serviceFactory.currentLobby;
+        }
+        $scope.$apply();
+    };
+    serviceFactory.registerObserverCallback(updateLobby);
 });
 // factories
+app.factory('serviceFactory', function(ENV) {
+    // socket
+    var socket = io.connect(ENV.serviceEndpoint + '/pugs', {
+        reconnection: true
+    });
+    socket.on('connect', function() {});
+    socket.on('browser update', function(pug) {
+        console.log("browser updated", pug);
+        if (service.lobbies[pug.id]) {
+            service.lobbies[pug.id].players = pug.players;
+            service.lobbies[pug.id].status = pug.status;
+        }
+        notifyObservers();
+    });
+    socket.on("lobby update", function(data) {
+        console.log("lobby updated", data);
+        service.currentLobby = data;
+        notifyObservers();
+    });
+    // register observer for lobby changes
+    var observerCallbacks = [];
+    var notifyObservers = function() {
+        angular.forEach(observerCallbacks, function(callback) {
+            callback();
+        });
+    };
+    // pugs
+    var service = {};
+    service.lobbies = {};
+    service.currentLobby = null;
+    service.lobbyJoin = function(pugId, profile) {
+        // join
+        console.log("lobby join", pugId);
+        socket.emit("lobby join", {
+            id: pugId,
+            displayName: profile.displayName
+        });
+
+        // set current lobby
+        service.currentLobby = pugId;
+    };
+    service.lobbyLeave = function() {
+        // leave
+        console.log("lobby leave", service.currentLobby);
+        socket.emit("lobby leave");
+
+        // set current lobby
+        service.currentLobby = null;
+    };
+    service.browserJoin = function() {
+        // join
+        console.log("browser join");
+        socket.emit("browser join");
+    };
+    service.browserLeave = function() {
+        // leave
+        console.log("browser leave");
+        socket.emit("browser leave");
+    };
+    service.registerObserverCallback = function(callback) {
+        observerCallbacks.push(callback);
+    };
+    return service;
+});
+// app.factory('lobbyFactory', function(ENV) {
+//     // socket
+//     var socket = io.connect(ENV.serviceEndpoint + '/lobby', {
+//         reconnection: true
+//     });
+//     socket.on('connect', function() {});
+//     socket.on("update", function(data) {
+//         lobby.pug = data;
+//         notifyObservers();
+//     });
+//     // lobby
+//     var lobby = {};
+//     lobby.pug = null;
+//     lobby.join = function(pugId, profile) {
+//         console.log("joining lobby", lobby.pug && lobby.pug.id);
+//         // join
+//         socket.emit("join", {
+//             id: pugId,
+//             displayName: profile.displayName
+//         });
+//     };
+//     lobby.leave = function() {
+//         console.log("leaving lobby", lobby.pug && lobby.pug.id);
+//         // leave
+//         socket.emit("leave");
+//     };
+//     lobby.ready = function() {
+//         socket.emit("ready");
+//     };
+//     // register observer for lobby changes
+//     var observerCallbacks = [];
+//     var notifyObservers = function() {
+//         angular.forEach(observerCallbacks, function(callback) {
+//             callback();
+//         });
+//     };
+//     lobby.registerObserverCallback = function(callback) {
+//         observerCallbacks.push(callback);
+//     };
+//     return lobby;
+// });
 app.factory('apiFactory', function($http, ENV) {
     var profile = {};
     profile.getProfile = function() {
@@ -146,61 +296,6 @@ app.factory('apiFactory', function($http, ENV) {
     };
     return profile;
 });
-app.factory('pugsFactory', function(ENV) {
-    var pugs = {};
-    var socket;
-    pugs.connected = false;
-    pugs.connect = function() {
-        if (socket) {
-            return socket.connect();
-        }
-        socket = io.connect(ENV.serviceEndpoint + '/pugs', {
-            reconnection: true
-        });
-        socket.on('connect', function() {
-            pugs.connected = true;
-        });
-    }
-    pugs.disconnect = function() {
-        socket.disconnect();
-        pugs.connected = false;
-    }
-    return pugs;
-});
-app.factory('lobbyFactory', function(ENV) {
-    var lobby = {};
-    var socket;
-    lobby.connected = false;
-    lobby.connect = function(pugId) {
-        if (socket) {
-            return socket.connect();
-        }
-        socket = io.connect(ENV.serviceEndpoint + '/lobby', {
-            reconnection: true
-        });
-        socket.on('connect', function() {
-            lobby.connected = true;
-            socket.emit("join", {
-                id: pugId
-            });
-        });
-        // lobby info update
-        // socket.on('update', function(data) {
-        //     console.log(data);
-        // });
-    }
-    lobby.disconnect = function() {
-        socket.disconnect();
-        lobby.connected = false;
-    }
-    lobby.ready = function() {
-        socket.emit("ready");
-    }
-    lobby.socket = function() {
-        return socket;
-    }
-    return lobby;
-});
 // services
 app.service('profileService', function() {
     this.loggedIn = false;
@@ -212,4 +307,10 @@ app.service('profileService', function() {
 // constants
 app.constant('ENV', {
     'serviceEndpoint': 'http://localhost:4000'
+});
+// filters
+app.filter('getCount', function() {
+    return function(items) {
+        return items.length;
+    }
 });

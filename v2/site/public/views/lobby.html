@@ -1,5 +1,8 @@
+<div ng-show="full">
+  pug is full
+</div>
 <div ng-hide="pug">
-
+  pug not found
 </div>
 <div ng-show="pug">
     <h3>{{::pug.name}}</h3>
@@ -11,7 +14,7 @@
     <h5>Players</h5>
     <b>{{pug.players}}</b>
     <h5>Actions</h5>
-    <button class="button-primary">Join lobby</button>
+    <button class="button-primary" ng-click="join()">Join lobby</button>
     <button class="button-primary">Ready up</button>
     <button class="button-primary">Join server</button>
     <hr>

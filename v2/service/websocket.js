@@ -19,34 +19,64 @@ module.exports = function(server) {
     // PUGS
     var pugs = io.of('/pugs');
     pugs.on('connection', function(socket) {
-        socket.on('my other event', function(data) {
-            console.log(data);
-        });
-    });
-    // PUG LOBBY
-    var lobby = io.of('/lobby');
-    lobby.on('connection', function(socket) {
-        // a player joined lobby
-        socket.on('join', function(data) {
-            socket.pugId = data && data.id;
+        console.log(socket.handshake.headers.cookie);
+        // lobby
+        socket.on('lobby join', function(data) {
+            // save user settings to socket
+            socket.currentLobbyId = data && data.id;
+            socket.displayName = data && data.displayName;
+            console.log(socket.displayName, "joined lobby", socket.currentLobbyId);
             // join room
-            socket.join(socket.pugId);
-            // add user to lobby
-            var key = ["server", socket.pugId, "players"].join(":");
-            client.sadd(key, "adrian", redis.print);
-            // get lobby info
-            broker.getPug(socket.pugId, function(err, pug) {
-                lobby.to(socket.pugId).emit('update', pug);
+            socket.join(socket.currentLobbyId);
+            // get latest lobby info
+            broker.getPug(socket.currentLobbyId, function(err, pug) {
+                // add user to redis
+                var key = ["server", socket.currentLobbyId, "players"].join(":");
+                client.sadd(key, socket.displayName, redis.print);
+                // get lobby info with new player
+                updateLobbyAndBrowser();
             });
         });
-        // a user is ready
-        socket.on('ready', function() {
-            //
+        socket.on('lobby leave', function() {
+            console.log(socket.displayName, "leave lobby", socket.currentLobbyId);
+            // remove user from redis
+            var key = ["server", socket.currentLobbyId, "players"].join(":");
+            client.srem(key, socket.displayName, redis.print);
+            // update lobby
+            updateLobbyAndBrowser();
+            socket.currentLobbyId = null;
+            socket.leave(socket.currentLobbyId);
+        });
+        // browser
+        socket.on('browser join', function() {
+            socket.join("browser");
+        });
+        socket.on('browser leave', function() {
+            socket.leave("browser");
         });
         // disconnect
         socket.on('disconnect', function() {
-            var key = ["server", socket.pugId, "players"].join(":");
-            client.srem(key, "adrian", redis.print);
+            console.log(socket.displayName, "disconnect");
+            // update redis
+            var key = ["server", socket.currentLobbyId, "players"].join(":");
+            client.srem(key, socket.displayName, redis.print);
         });
+        // helper functions
+        function updateLobbyAndBrowser() {
+            if (!socket.currentLobbyId) return;
+            broker.getPug(socket.currentLobbyId, function(err, pug) {
+                if (err) return console.error(err);
+                if (pug && pug.id) {
+                    // update room
+                    pugs.to(socket.currentLobbyId).emit('lobby update', pug);
+                    // update pugs list
+                    pugs.to("browser").emit('browser update', {
+                        id: pug.id,
+                        players: pug.players,
+                        status: pug.status
+                    });
+                }
+            });
+        }
     });
 }

@@ -1,103 +1,97 @@
 body {
-  font-family: 'Open Sans', sans-serif;
-  font-size: 14px;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 14px;
 }
-
 a {
-  text-decoration: none;
+    text-decoration: none;
 }
-
+.main {
+}
 .sidebar {
-  position: fixed;
-  width: 250px;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  background-color: #2F3A4C;
-  color: #fff;
+    position: absolute;
+    width: 250px;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    background-color: #2F3A4C;
+    color: #fff;
+    z-index: 50;
 }
-
 .sidebar .header {
-  width: 100%;
-  padding: 12px 0;
+    width: 100%;
+    padding: 12px 0;
 }
-
 .sidebar .header span {
-  display: block;
-  text-align: left;
-  font-size: 1.5em;
-  color: #fff;
+    display: block;
+    text-align: left;
+    font-size: 1.5em;
+    color: #fff;
 }
-
-.sidebar .nav {
-
+.sidebar .nav {} .content {
+    position: relative;
+    width: 100%;
+    /*position: absolute;*/
+    
+    top: 0;
+    bottom: 0;
+    left: 250px;
+    max-width: 800px;
+    padding: 20px 40px;
+    /*background-color: #efefef;*/
 }
-
-.content {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 250px;
-  max-width: 800px;
-  padding: 20px 40px;
-  /*background-color: #efefef;*/
-}
-
 .block {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background-color: #fff;
-  z-index: 100;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: #fff;
+    z-index: 100;
 }
-
-
 h1, h2, h3, h4, h5 {
-  margin-top: 10px;
-  margin-bottom: 0px;
+    margin-top: 10px;
+    margin-bottom: 0px;
 }
-
 .pug {
-  background-color: #ededed;
-  padding: 10px;
+    background-color: #ededed;
+    padding: 10px;
 }
-
 .pugs-table > tbody > tr {
-  cursor: pointer;
+    cursor: pointer;
 }
-
-
 /*SPINNER*/
+
 .sk-spinner-pulse.sk-spinner {
-  position: absolute;
-  bottom: 50%;
-  right: 50%;
-  width: 100px;
-  height: 100px;
-  margin: 0 auto;
-  background-color: #333;
-  border-radius: 100%;
-  -webkit-animation: sk-pulseScaleOut 2s infinite ease-in-out;
-          animation: sk-pulseScaleOut 2s infinite ease-in-out; }
-
+    position: absolute;
+    bottom: 50%;
+    right: 50%;
+    width: 100px;
+    height: 100px;
+    margin: 0 auto;
+    background-color: #333;
+    border-radius: 100%;
+    -webkit-animation: sk-pulseScaleOut 2s infinite ease-in-out;
+    animation: sk-pulseScaleOut 2s infinite ease-in-out;
+}
 @-webkit-keyframes sk-pulseScaleOut {
-  0% {
-    -webkit-transform: scale(0);
-            transform: scale(0); }
-
-  100% {
-    -webkit-transform: scale(1);
-            transform: scale(1);
-    opacity: 0; } }
-
+    0% {
+        -webkit-transform: scale(0);
+        transform: scale(0);
+    }
+    100% {
+        -webkit-transform: scale(1);
+        transform: scale(1);
+        opacity: 0;
+    }
+}
 @keyframes sk-pulseScaleOut {
-  0% {
-    -webkit-transform: scale(0);
-            transform: scale(0); }
-
-  100% {
-    -webkit-transform: scale(1);
-            transform: scale(1);
-    opacity: 0; } }
+    0% {
+        -webkit-transform: scale(0);
+        transform: scale(0);
+    }
+    100% {
+        -webkit-transform: scale(1);
+        transform: scale(1);
+        opacity: 0;
+    }
+}
