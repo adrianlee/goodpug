@@ -39,7 +39,7 @@ module.exports = function(server) {
         });
         socket.on('lobby leave', function() {
             if (!socket.currentLobbyId) return;
-            console.log(socket.displayName, "leave lobby", socket.currentLobbyId);
+            console.log(socket.displayName, "left lobby", socket.currentLobbyId);
             // remove user from redis
             var key = ["server", socket.currentLobbyId, "players"].join(":");
             client.srem(key, socket.displayName, redis.print);
@@ -74,7 +74,6 @@ module.exports = function(server) {
         function updateLobbyAndBrowser(callback) {
             if (!socket.currentLobbyId) return;
             broker.getPug(socket.currentLobbyId, function(err, pug) {
-                console.log(socket.currentLobbyId, pug);
                 if (err) return console.error(err);
                 if (pug) {
                     // update room

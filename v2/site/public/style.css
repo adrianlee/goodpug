@@ -1,44 +1,16 @@
-body {
-    font-family: 'Open Sans', sans-serif;
-    font-size: 14px;
+header, main, footer {
+  padding-left: 240px;
+}
+
+@media only screen and (max-width : 992px) {
+  header, main, footer {
+    padding-left: 0;
+  }
 }
 a {
-    text-decoration: none;
+  color: #26a69a;
 }
-.main {
-}
-.sidebar {
-    position: absolute;
-    width: 250px;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    background-color: #2F3A4C;
-    color: #fff;
-    z-index: 50;
-}
-.sidebar .header {
-    width: 100%;
-    padding: 12px 0;
-}
-.sidebar .header span {
-    display: block;
-    text-align: left;
-    font-size: 1.5em;
-    color: #fff;
-}
-.sidebar .nav {} .content {
-    position: relative;
-    width: 100%;
-    /*position: absolute;*/
-    
-    top: 0;
-    bottom: 0;
-    left: 250px;
-    max-width: 800px;
-    padding: 20px 40px;
-    /*background-color: #efefef;*/
-}
+
 .block {
     position: absolute;
     top: 0;
@@ -46,52 +18,15 @@ a {
     left: 0;
     right: 0;
     background-color: #fff;
-    z-index: 100;
+    z-index: 1000;
 }
-h1, h2, h3, h4, h5 {
-    margin-top: 10px;
-    margin-bottom: 0px;
-}
+
+/*
 .pug {
     background-color: #ededed;
     padding: 10px;
 }
-.pugs-table > tbody > tr {
+*/
+.pug-table > tbody > tr {
     cursor: pointer;
-}
-/*SPINNER*/
-
-.sk-spinner-pulse.sk-spinner {
-    position: absolute;
-    bottom: 50%;
-    right: 50%;
-    width: 100px;
-    height: 100px;
-    margin: 0 auto;
-    background-color: #333;
-    border-radius: 100%;
-    -webkit-animation: sk-pulseScaleOut 2s infinite ease-in-out;
-    animation: sk-pulseScaleOut 2s infinite ease-in-out;
-}
-@-webkit-keyframes sk-pulseScaleOut {
-    0% {
-        -webkit-transform: scale(0);
-        transform: scale(0);
-    }
-    100% {
-        -webkit-transform: scale(1);
-        transform: scale(1);
-        opacity: 0;
-    }
-}
-@keyframes sk-pulseScaleOut {
-    0% {
-        -webkit-transform: scale(0);
-        transform: scale(0);
-    }
-    100% {
-        -webkit-transform: scale(1);
-        transform: scale(1);
-        opacity: 0;
-    }
 }

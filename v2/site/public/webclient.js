@@ -2,8 +2,8 @@ var app = angular.module('Pug', ['ngRoute']);
 // config
 app.config(function($routeProvider, $locationProvider, $httpProvider) {
     $routeProvider.when('/', {
-        templateUrl: 'views/pugs.html',
-        controller: 'pugsController',
+        templateUrl: '/views/browser.html',
+        controller: 'browserController',
         resolve: {
             pugs: function($q, apiFactory) {
                 var delay = $q.defer();
@@ -17,28 +17,19 @@ app.config(function($routeProvider, $locationProvider, $httpProvider) {
                     delay.reject(status);
                 });
                 return delay.promise;
-            },
-            profile: function($q, apiFactory) {
-                var delay = $q.defer();
-                apiFactory.getProfile().success(function(profile) {
-                    delay.resolve(profile);
-                }).error(function(err, status) {
-                    delay.reject(status);
-                });
-                return delay.promise;
             }
         }
     }).when('/login', {
-        templateUrl: 'views/login.html',
+        templateUrl: '/views/login.html',
         controller: 'loginController'
     }).when('/logout', {
-        templateUrl: 'views/logout.html',
+        templateUrl: '/views/logout.html',
         controller: 'logoutController'
     }).when('/oops', {
         templateUrl: 'oops.html',
         controller: 'oopsController'
     }).when('/admin', {
-        templateUrl: 'views/admin.html',
+        templateUrl: '/views/admin.html',
         controller: 'adminController',
         resolve: {
             profile: function($q, apiFactory) {
@@ -52,7 +43,7 @@ app.config(function($routeProvider, $locationProvider, $httpProvider) {
             }
         }
     }).when('/pug/:id', {
-        templateUrl: 'views/lobby.html',
+        templateUrl: '/views/lobby.html',
         controller: 'lobbyController',
         resolve: {
             pug: function($q, $route, apiFactory) {
@@ -67,36 +58,9 @@ app.config(function($routeProvider, $locationProvider, $httpProvider) {
             }
         }
     }).when('/me', {
-        templateUrl: 'views/profile.html',
+        templateUrl: '/views/profile.html',
         controller: 'profileController',
         resolve: {
-            profile: function($q, apiFactory) {
-                var delay = $q.defer();
-                apiFactory.getProfile().success(function(profile) {
-                    delay.resolve(profile);
-                }).error(function(err, status) {
-                    delay.reject(status);
-                });
-                return delay.promise;
-            }
-        }
-    }).when('/pugs', {
-        templateUrl: 'views/pugs.html',
-        controller: 'pugsController',
-        resolve: {
-            pugs: function($q, apiFactory) {
-                var delay = $q.defer();
-                apiFactory.getPugs().success(function(data) {
-                    var pugs = {};
-                    for (var i = 0; i < data.length; i++) {
-                        pugs[data[i].id] = data[i];
-                    }
-                    delay.resolve(pugs);
-                }).error(function(err, status) {
-                    delay.reject(status);
-                });
-                return delay.promise;
-            },
             profile: function($q, apiFactory) {
                 var delay = $q.defer();
                 apiFactory.getProfile().success(function(profile) {
@@ -110,21 +74,14 @@ app.config(function($routeProvider, $locationProvider, $httpProvider) {
     }).otherwise({
         redirectTo: '/'
     });
-    $locationProvider.html5Mode(true);
+    // $locationProvider.html5Mode(true);
     $httpProvider.defaults.useXDomain = true;
     delete $httpProvider.defaults.headers.common['X-Requested-With'];
 });
 // run
 app.run(function($rootScope, $location, profileService, apiFactory) {
     // // register listener to watch route changes
-    $rootScope.$on("$routeChangeStart", function(event, next, current) {
-        // if (pugsFactory.connected) {
-        //     pugsFactory.disconnect();
-        // }
-        // if (lobbyFactory.connected) {
-        //     // lobbyFactory.leave();
-        // }
-    });
+    $rootScope.$on("$routeChangeStart", function(event, next, current) {});
     $rootScope.$on("$routeChangeError", function(event, next, current, rejection) {
         console.log("routeChangeError");
         if (rejection == 401) {
@@ -146,6 +103,8 @@ app.controller('mainController', function($scope, apiFactory, profileService) {
         profileService.loggedIn = true;
         if (!data) profileService.forceLogin()
     });
+    $(".button-collapse").sideNav();
+    $('.collapsible').collapsible();
 });
 app.controller('homeController', function() {});
 app.controller('loginController', function() {});
@@ -157,12 +116,13 @@ app.controller('profileController', function($scope, profile) {
     $scope.profile = profile || {};
 });
 app.controller('adminController', function($scope, profile) {});
-app.controller('pugsController', function($scope, $location, apiFactory, serviceFactory, pugs) {
+app.controller('browserController', function($scope, $location, apiFactory, serviceFactory, pugs) {
     $scope.pugs = pugs || {};
     serviceFactory.lobbies = pugs;
     serviceFactory.browserJoin();
     $scope.$on("$destroy", function() {
         serviceFactory.browserLeave();
+        serviceFactory.unregisterObserverCallback(updatePugs);
     });
     // scope functions
     $scope.join = function(pug) {
@@ -183,6 +143,7 @@ app.controller('lobbyController', function($scope, pug, serviceFactory, profileS
     serviceFactory.lobbyJoin(pug.id, profileService.profile);
     $scope.$on("$destroy", function() {
         serviceFactory.lobbyLeave();
+        serviceFactory.unregisterObserverCallback(updateLobby);
     });
     $scope.join = function() {
         for (var i in $scope.pug.players) {
@@ -194,7 +155,6 @@ app.controller('lobbyController', function($scope, pug, serviceFactory, profileS
     };
     var updateLobby = function() {
         // update pug info if joined
-        console.log(serviceFactory.currentLobby);
         if (serviceFactory.currentLobby) {
             $scope.pug = serviceFactory.currentLobby;
         }
@@ -261,49 +221,12 @@ app.factory('serviceFactory', function(ENV) {
     service.registerObserverCallback = function(callback) {
         observerCallbacks.push(callback);
     };
+    service.unregisterObserverCallback = function(callback) {
+        var index = observerCallbacks.indexOf(callback);
+        observerCallbacks.splice(index, 1);
+    };
     return service;
 });
-// app.factory('lobbyFactory', function(ENV) {
-//     // socket
-//     var socket = io.connect(ENV.serviceEndpoint + '/lobby', {
-//         reconnection: true
-//     });
-//     socket.on('connect', function() {});
-//     socket.on("update", function(data) {
-//         lobby.pug = data;
-//         notifyObservers();
-//     });
-//     // lobby
-//     var lobby = {};
-//     lobby.pug = null;
-//     lobby.join = function(pugId, profile) {
-//         console.log("joining lobby", lobby.pug && lobby.pug.id);
-//         // join
-//         socket.emit("join", {
-//             id: pugId,
-//             displayName: profile.displayName
-//         });
-//     };
-//     lobby.leave = function() {
-//         console.log("leaving lobby", lobby.pug && lobby.pug.id);
-//         // leave
-//         socket.emit("leave");
-//     };
-//     lobby.ready = function() {
-//         socket.emit("ready");
-//     };
-//     // register observer for lobby changes
-//     var observerCallbacks = [];
-//     var notifyObservers = function() {
-//         angular.forEach(observerCallbacks, function(callback) {
-//             callback();
-//         });
-//     };
-//     lobby.registerObserverCallback = function(callback) {
-//         observerCallbacks.push(callback);
-//     };
-//     return lobby;
-// });
 app.factory('apiFactory', function($http, ENV) {
     var profile = {};
     profile.getProfile = function() {

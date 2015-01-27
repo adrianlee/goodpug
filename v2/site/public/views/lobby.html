@@ -1,23 +1,25 @@
-<div ng-show="full">
-    pug is full
-</div>
-<div ng-hide="pug">
-    pug not found
-</div>
-<div ng-show="pug">
-    <h3>{{::pug.name}}</h3>
-    <h5>Location</h5>
-    <b>{{::pug.location}}</b>
-    <h5>Status</h5>
-    <b ng-show="pug.status == 0">NOT LIVE</b>
-    <b ng-show="pug.status == 1">LIVE</b>
-    <b ng-show="pug.status == null">UNKNOWN</b>
-    <h5>Players</h5>
-    <b>{{pug.players}}</b>
-    <h5>Actions</h5>
-    <button class="button-primary" ng-click="join()">Join lobby</button>
-    <button class="button-primary">Ready up</button>
-    <button class="button-primary">Join server</button>
-    <hr>
-    {{pug}}
+<div class="row">
+  <div ng-show="full">
+      pug is full
+  </div>
+  <div ng-hide="pug">
+      pug not found
+  </div>
+  <div ng-show="pug">
+      <h2 class="teal-text text-lighten-1">Lobby</h2>
+      <h4 class="teal-text text-lighten-2">{{::pug.name}}</h4>
+      <h5>Location</h5>
+      {{::pug.location}}
+      <h5>Status</h5>
+      <span ng-show="pug.status == 0">NOT LIVE</span>
+      <span ng-show="pug.status == 1">LIVE</span>
+      <span ng-show="pug.status == null">UNKNOWN</span>
+      <h5>Players</h5>
+      {{pug.players}}
+      <h5>Actions</h5>
+      <button class="waves-effect waves-light btn teal lighten-1" ng-click="join()">Join lobby</button>
+      <button class="waves-effect waves-light btn teal lighten-1">Ready up</button>
+      <button class="waves-effect waves-light btn teal lighten-1">Join server</button>
+      <!-- {{pug}} -->
+  </div>
 </div>

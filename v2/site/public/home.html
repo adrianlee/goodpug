@@ -4,42 +4,102 @@
         <base href="/">
         <meta charset="utf-8">
         <title>GoodPug</title>
-        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/normalize/3.0.2/normalize.min.css" />
-        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css" />
+        <!-- <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,600,300' rel='stylesheet' type='text/css' /> -->
+        <link type="text/css" rel="stylesheet" href="/css/materialize.min.css"  media="screen, projection" />
         <link rel="stylesheet" href="/style.css" />
-        <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,600,300' rel='stylesheet' type='text/css' />
         <!--[if IE]>
         <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
         <![endif]-->
     </head>
     <body ng-app="Pug">
-        <div class="main">
-            <div ng-controller="mainController"><div class="block" ng-show="loginBlock"><div class="sk-spinner sk-spinner-pulse"></div></div></div>
-            <!-- SIDEBAR -->
-            <div class="sidebar">
-                <div class="container">
-                    <div class="header"><a href="/"><span>Goodpug</span></a></div>
-                    <!-- <a href="/pugs">FIND A PUG</a><br> -->
-                    <a href="/me">PROFILE</a><br>
-                    <a href="/admin">ADMIN</a><br>
-                    <a href="/logout">LOGOUT</a>
+        <div ng-controller="mainController">
+            <div class="block valign-wrapper" ng-show="loginBlock">
+                <div class="valign">
+                    <div class="preloader-wrapper active">
+                        <div class="spinner-layer spinner-blue">
+                            <div class="circle-clipper left">
+                                <div class="circle"></div>
+                            </div>
+                            <div class="gap-patch">
+                                <div class="circle"></div>
+                            </div>
+                            <div class="circle-clipper right">
+                                <div class="circle"></div>
+                            </div>
+                        </div>
+                        <div class="spinner-layer spinner-red">
+                            <div class="circle-clipper left">
+                                <div class="circle"></div>
+                            </div>
+                            <div class="gap-patch">
+                                <div class="circle"></div>
+                            </div>
+                            <div class="circle-clipper right">
+                                <div class="circle"></div>
+                            </div>
+                        </div>
+                        <div class="spinner-layer spinner-yellow">
+                            <div class="circle-clipper left">
+                                <div class="circle"></div>
+                            </div>
+                            <div class="gap-patch">
+                                <div class="circle"></div>
+                            </div>
+                            <div class="circle-clipper right">
+                                <div class="circle"></div>
+                            </div>
+                        </div>
+                        <div class="spinner-layer spinner-green">
+                            <div class="circle-clipper left">
+                                <div class="circle"></div>
+                            </div>
+                            <div class="gap-patch">
+                                <div class="circle"></div>
+                            </div>
+                            <div class="circle-clipper right">
+                                <div class="circle"></div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <!-- MAIN -->
-            <div class="content container-fluid">
-                <div ng-view></div>
-            </div>
         </div>
+        <header>
+            <!-- SIDEBAR -->
+            <ul id="slide-out" class="side-nav fixed">
+                <li><a href="#/">Pugs</a></li>
+                <li><a href="#/me">Your Profile</a></li>
+                <li><a href="#/admin">Admin Settings</a></li>
+                <li><a href="#/logout">Logout</a></li>
+            </ul>
+        </header>
+        <main>
+        <div class="container">
+            <div class="row">
+              <a href="#" data-activates="slide-out" class="button-collapse hide-on-large-only"><i class="grey-text text-darken-4 small mdi-navigation-menu"></i></a>
+            </div>
+            <div ng-view></div>
+        </div>
+        </main>
+        <!-- <footer class="page-footer">
+            <div class="footer-copyright">
+                <div class="container">
+                    © 2014 Copyright Text
+                    <a class="grey-text text-lighten-4 right" href="#!">More Links</a>
+                </div>
+            </div>
+        </footer> -->
         <!-- TEMPLATES -->
         <script type="text/ng-template" id="oops.html">
             Oops, something went wrong.
         </script>
         <!-- SCRIPTS -->
-        <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-        <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.2.1/socket.io.min.js"></script>
-        <script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js"></script>
-        <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.8/angular.min.js"></script>
-        <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.8/angular-route.min.js"></script>
-        <script src="/webclient.js"></script>
+        <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+        <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.2.1/socket.io.min.js"></script>
+        <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js"></script>
+        <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.8/angular.min.js"></script>
+        <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.8/angular-route.min.js"></script>
+        <script type="text/javascript" src="/js/materialize.min.js"></script>
+        <script type="text/javascript" src="/webclient.js"></script>
     </body>
 </html>

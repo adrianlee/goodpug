@@ -59,20 +59,20 @@ app.get('/profile', ensureAuthenticated, function(req, res) {
 });
 // static files
 app.use(express.static(__dirname + '/public'));
-// app.get('/', function(req, res) {
-//     if (req.isAuthenticated()) {
-//         var data = req.user;
-//         return res.sendFile(__dirname + "/public/index.html");
-//     }
-//     res.sendFile(__dirname + "/public/welcome.html");
-// });
-app.use(function(req, res) {
+app.get('/', function(req, res) {
     if (req.isAuthenticated()) {
         var data = req.user;
         return res.sendFile(__dirname + "/public/home.html");
     }
     res.sendFile(__dirname + "/public/welcome.html");
 });
+// app.use(function(req, res) {
+//     if (req.isAuthenticated()) {
+//         var data = req.user;
+//         return res.sendFile(__dirname + "/public/home.html");
+//     }
+//     res.sendFile(__dirname + "/public/welcome.html");
+// });
 // helper functions
 function ensureAuthenticated(req, res, next) {
     if (req.isAuthenticated()) {
