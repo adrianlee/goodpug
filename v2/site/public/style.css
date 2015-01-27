@@ -1,16 +1,14 @@
 header, main, footer {
-  padding-left: 240px;
+    padding-left: 240px;
 }
-
-@media only screen and (max-width : 992px) {
-  header, main, footer {
-    padding-left: 0;
-  }
+@media only screen and (max-width: 992px) {
+    header, main, footer {
+        padding-left: 0;
+    }
 }
 a {
-  color: #26a69a;
+    color: #26a69a;
 }
-
 .block {
     position: absolute;
     top: 0;
@@ -20,13 +18,28 @@ a {
     background-color: #fff;
     z-index: 1000;
 }
-
-/*
-.pug {
-    background-color: #ededed;
-    padding: 10px;
-}
-*/
 .pug-table > tbody > tr {
     cursor: pointer;
+}
+.pug-table > tbody > tr:hover {
+  background-color: #ededed !important;
+}
+.logo {
+  height: 100px;
+  text-align: center;
+  border-bottom: 1px solid #ededed;
+}
+.logo:hover {
+  background-color: #ffffff !important;
+}
+.logo img {
+  padding: 20px 0;
+}
+.findapug:hover span {
+  display: none;
+}
+.findapug:hover:before {
+  content: "Find a Pick Up Game";
+}
+.material-tooltip {
 }

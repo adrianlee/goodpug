@@ -2,8 +2,8 @@ var app = angular.module('Pug', ['ngRoute']);
 // config
 app.config(function($routeProvider, $locationProvider, $httpProvider) {
     $routeProvider.when('/', {
-        templateUrl: '/views/browser.html',
-        controller: 'browserController',
+        templateUrl: '/views/home.html',
+        controller: 'homeController',
         resolve: {
             pugs: function($q, apiFactory) {
                 var delay = $q.defer();
@@ -36,6 +36,24 @@ app.config(function($routeProvider, $locationProvider, $httpProvider) {
                 var delay = $q.defer();
                 apiFactory.getProfile().success(function(profile) {
                     delay.resolve(profile);
+                }).error(function(err, status) {
+                    delay.reject(status);
+                });
+                return delay.promise;
+            }
+        }
+    }).when('/pugs', {
+        templateUrl: '/views/browser.html',
+        controller: 'browserController',
+        resolve: {
+            pugs: function($q, apiFactory) {
+                var delay = $q.defer();
+                apiFactory.getPugs().success(function(data) {
+                    var pugs = {};
+                    for (var i = 0; i < data.length; i++) {
+                        pugs[data[i].id] = data[i];
+                    }
+                    delay.resolve(pugs);
                 }).error(function(err, status) {
                     delay.reject(status);
                 });
