@@ -22,19 +22,19 @@ app.config(function($routeProvider, $locationProvider, $httpProvider) {
     }).when('/login', {
         templateUrl: '/views/login.html',
         controller: 'loginController'
-    }).when('/logout', {
-        templateUrl: '/views/logout.html',
-        controller: 'logoutController'
     }).when('/oops', {
         templateUrl: 'oops.html',
+        controller: 'oopsController'
+    }).when('/403', {
+        templateUrl: '403.html',
         controller: 'oopsController'
     }).when('/admin', {
         templateUrl: '/views/admin.html',
         controller: 'adminController',
         resolve: {
-            profile: function($q, apiFactory) {
+            playersAndServers: function($q, apiFactory) {
                 var delay = $q.defer();
-                apiFactory.getProfile().success(function(profile) {
+                apiFactory.getPlayersAndServers().success(function(profile) {
                     delay.resolve(profile);
                 }).error(function(err, status) {
                     delay.reject(status);
@@ -69,7 +69,6 @@ app.config(function($routeProvider, $locationProvider, $httpProvider) {
                 apiFactory.getPug($route.current.params && $route.current.params.id).success(function(pug) {
                     delay.resolve(pug);
                 }).error(function(err, status) {
-                    console.log(status);
                     delay.reject(err);
                 });
                 return delay.promise;
@@ -99,16 +98,23 @@ app.config(function($routeProvider, $locationProvider, $httpProvider) {
 // run
 app.run(function($rootScope, $location, profileService, apiFactory) {
     // // register listener to watch route changes
-    $rootScope.$on("$routeChangeStart", function(event, next, current) {});
+    $rootScope.$on("$routeChangeStart", function(event, next, current) {
+        $('.button-collapse').sideNav('hide');
+    });
     $rootScope.$on("$routeChangeError", function(event, next, current, rejection) {
-        console.log("routeChangeError");
         if (rejection == 401) {
             location.href = "/logout";
             return;
-        };
+        } else if (rejection == 403) {
+            $location.path("/403");
+            return;
+        }
         event.preventDefault();
         $location.path("/oops");
     });
+    $rootScope.logout = function() {
+        location.href = "/logout";
+    };
 });
 // controllers
 app.controller('mainController', function($scope, apiFactory, profileService) {
@@ -126,14 +132,14 @@ app.controller('mainController', function($scope, apiFactory, profileService) {
 });
 app.controller('homeController', function() {});
 app.controller('loginController', function() {});
-app.controller('logoutController', function() {
-    location.href = "/logout";
-});
 app.controller('oopsController', function() {});
 app.controller('profileController', function($scope, profile) {
     $scope.profile = profile || {};
 });
-app.controller('adminController', function($scope, profile) {});
+app.controller('adminController', function($scope, playersAndServers) {
+    $scope.players = playersAndServers.players || [];
+    $scope.servers = playersAndServers.servers || [];
+});
 app.controller('browserController', function($scope, $location, apiFactory, serviceFactory, pugs) {
     $scope.pugs = pugs || {};
     serviceFactory.lobbies = pugs;
@@ -249,6 +255,9 @@ app.factory('apiFactory', function($http, ENV) {
     var profile = {};
     profile.getProfile = function() {
         return $http.get('/profile');
+    };
+    profile.getPlayersAndServers = function() {
+        return $http.get('/admin');
     };
     profile.getPugs = function() {
         return $http.get(ENV.serviceEndpoint + '/pugs');

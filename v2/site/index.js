@@ -1,3 +1,5 @@
+var db = require('./database');
+var async = require("async");
 // express app init
 var express = require('express');
 var app = express();
@@ -56,6 +58,31 @@ app.all('*', function(req, res, next) {
 });
 app.get('/profile', ensureAuthenticated, function(req, res) {
     res.send(req.user);
+});
+app.get('/admin', ensureAuthenticated, function (req, res) {
+  if (req.user.id !== "76561197961790405") {
+    res.sendStatus(403);
+    return;
+  }
+
+  var fetchPlayers = function (callback) {
+    db.Player.find({}, function (err, docs) {
+      callback(err, docs);
+    });  
+  };
+
+  var fetchServers = function (callback) {
+    db.Server.find({}, function (err, docs) {
+      callback(err, docs);
+    });  
+  }
+  
+  async.parallel({
+    players: fetchPlayers,
+    servers: fetchServers
+  }, function (err, results) {
+    res.send(results);
+  });
 });
 // static files
 app.use(express.static(__dirname + '/public'));

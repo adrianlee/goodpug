@@ -1,3 +1,6 @@
+html {
+    font-family: 'Lato', sans-serif;
+}
 header, main, footer {
     padding-left: 240px;
 }
@@ -22,24 +25,23 @@ a {
     cursor: pointer;
 }
 .pug-table > tbody > tr:hover {
-  background-color: #ededed !important;
+    background-color: #ededed !important;
 }
 .logo {
-  height: 100px;
-  text-align: center;
-  border-bottom: 1px solid #ededed;
+    height: 100px;
+    text-align: center;
+    border-bottom: 1px solid #ededed;
 }
 .logo:hover {
-  background-color: #ffffff !important;
+    background-color: #ffffff !important;
 }
 .logo img {
-  padding: 20px 0;
+    padding: 20px 0;
 }
 .findapug:hover span {
-  display: none;
+    display: none;
 }
 .findapug:hover:before {
-  content: "Find a Pick Up Game";
+    content: "Find a Pick Up Game";
 }
-.material-tooltip {
-}
+.material-tooltip {}

@@ -44,5 +44,15 @@ var Player = mongoose.model('Player', {
   updated: { type: Date, default: Date.now }
 });
 
+var Server = mongoose.model('Server', {
+  name: String,
+  ip: String,
+  port: String,
+  rcon: String,
+  location: { type: String, enum: ["USWEST", "USEAST", "USCENTRAL"] },
+  updated: { type: Date, default: Date.now }
+});
+
 module.exports.mongoose = mongoose;
 module.exports.Player = Player;
+module.exports.Server = Server;
