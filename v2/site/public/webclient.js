@@ -139,14 +139,14 @@ app.controller('mainController', function($rootScope, $scope, apiFactory, profil
     apiFactory.getProfile().success(function(data) {
         profileService.profile = data;
         $rootScope.profileId = data.id;
+        $rootScope.isAdmin = profileService.isAdmin();
         profileService.loggedIn = true;
         if (!data) profileService.forceReload()
     });
     $(".button-collapse").sideNav();
     $('.collapsible').collapsible();
 });
-app.controller('navController', function($scope, profileService) {
-    
+app.controller('navController', function($rootScope, profileService) {
 });
 app.controller('homeController', function() {});
 app.controller('loginController', function() {});
@@ -293,6 +293,13 @@ app.factory('apiFactory', function($http, ENV) {
 app.service('profileService', function() {
     this.loggedIn = false;
     this.profile = {};
+    this.isAdmin = function () {
+        if (this.profile.id == "76561197961790405") {
+            return true;
+        }
+
+        return false;
+    }
     this.forceReload = function() {
         location.reload();
     };

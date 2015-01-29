@@ -73,8 +73,8 @@
                         </a>
                     </li>
                     <li><a href="#/pugs" class="findapug"><span>Find a PUG</span></a></li>
-                    <li><a href="#/profile/{{profileId}}">Your Profile</a></li>
-                    <li><a href="#/admin">Control Panel</a></li>
+                    <li><a href="#/profile/{{profileId}}">Profile</a></li>
+                    <li><a href="#/admin" ng-show="isAdmin">Control Panel</a></li>
                     <li><a href="/logout" ng-click="logout()">Logout</a></li>
                 </ul>
             </header>
@@ -97,6 +97,7 @@
             <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
             <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.2.1/socket.io.min.js"></script>
             <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js"></script>
+            <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment.min.js"></script>
             <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.8/angular.min.js"></script>
             <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.8/angular-route.min.js"></script>
             <script type="text/javascript" src="/js/materialize.min.js"></script>

@@ -55,3 +55,8 @@ a {
     content: "Find a Pick Up Game";
 }
 .material-tooltip {}
+
+
+.collapsible-body {
+  padding: 20px;
+}
