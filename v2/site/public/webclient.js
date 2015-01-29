@@ -88,6 +88,20 @@ app.config(function($routeProvider, $locationProvider, $httpProvider) {
                 return delay.promise;
             }
         }
+    }).when('/profile/:id', {
+        templateUrl: '/views/profile.html',
+        controller: 'profileController',
+        resolve: {
+            profile: function($q, $route, apiFactory) {
+                var delay = $q.defer();
+                apiFactory.getProfile($route.current.params && $route.current.params.id).success(function(profile) {
+                    delay.resolve(profile);
+                }).error(function(err, status) {
+                    delay.reject(status);
+                });
+                return delay.promise;
+            }
+        }
     }).otherwise({
         redirectTo: '/'
     });
@@ -117,18 +131,22 @@ app.run(function($rootScope, $location, profileService, apiFactory) {
     };
 });
 // controllers
-app.controller('mainController', function($scope, apiFactory, profileService) {
+app.controller('mainController', function($rootScope, $scope, apiFactory, profileService) {
     $scope.loginBlock = true;
     $scope.$watch('profileService.loggedIn', function() {
         $scope.loginBlock = false;
     });
     apiFactory.getProfile().success(function(data) {
         profileService.profile = data;
+        $rootScope.profileId = data.id;
         profileService.loggedIn = true;
-        if (!data) profileService.forceLogin()
+        if (!data) profileService.forceReload()
     });
     $(".button-collapse").sideNav();
     $('.collapsible').collapsible();
+});
+app.controller('navController', function($scope, profileService) {
+    
 });
 app.controller('homeController', function() {});
 app.controller('loginController', function() {});
@@ -253,8 +271,12 @@ app.factory('serviceFactory', function(ENV) {
 });
 app.factory('apiFactory', function($http, ENV) {
     var profile = {};
-    profile.getProfile = function() {
-        return $http.get('/profile');
+    profile.getProfile = function(id) {
+        if (!id) {
+            return $http.get('/profile');
+        }
+        
+        return $http.get('/profile/' + id);
     };
     profile.getPlayersAndServers = function() {
         return $http.get('/admin');
@@ -271,12 +293,13 @@ app.factory('apiFactory', function($http, ENV) {
 app.service('profileService', function() {
     this.loggedIn = false;
     this.profile = {};
-    this.forceLogin = function() {
+    this.forceReload = function() {
         location.reload();
     };
 });
 // constants
 app.constant('ENV', {
+    'siteEndpoint': 'http://localhost:3000',
     'serviceEndpoint': 'http://localhost:4000'
 });
 // filters

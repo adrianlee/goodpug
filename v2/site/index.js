@@ -59,6 +59,19 @@ app.all('*', function(req, res, next) {
 app.get('/profile', ensureAuthenticated, function(req, res) {
     res.send(req.user);
 });
+app.get('/profile/:id', ensureAuthenticated, function(req, res) {
+    if (!req.params.id) {
+      return res.sendStatus(404);
+    }
+
+    db.Player.findOne({ id: req.params.id }, function (err, profile) {
+      if (err) return res.sendStatus(500);
+      if (!profile) {
+        return res.sendStatus(404);
+      }
+      res.send(profile);
+    }); 
+});
 app.get('/admin', ensureAuthenticated, function (req, res) {
   if (req.user.id !== "76561197961790405") {
     res.sendStatus(403);

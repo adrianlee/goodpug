@@ -1,2 +1,91 @@
-{{ servers }}
-{{ players }}
+<div class="section">
+    <h2 class="teal-text text-lighten-1">Control Panel</h2>
+</div>
+<div class="section">
+    <h4 class="teal-text text-lighten-1">Add Server</h4>
+    <div class="card-panel">
+        <form>
+            <div class="row">
+                <div class="input-field col s6">
+                    <input id="name" type="text" class="validate">
+                    <label for="name">name</label>
+                </div>
+                <div class="input-field col s6">
+                    <select>
+                        <option value="" disabled selected>Choose a location</option>
+                        <option value="uswest">US WEST</option>
+                        <option value="uscentral">US CENTRAL</option>
+                        <option value="useast">US EAST</option>
+                    </select>
+                </div>
+                <script>$('select').material_select();</script>
+            </div>
+            <div class="row">
+                <div class="input-field col s6">
+                    <input id="ip" type="text" class="validate">
+                    <label for="ip">ip</label>
+                </div>
+                <div class="input-field col s6">
+                    <input id="port" type="text" class="validate">
+                    <label for="port">port</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s6">
+                    <input id="rcon" type="text" class="validate">
+                    <label for="rcon">rcon</label>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="section">
+    <h4 class="teal-text text-lighten-1">Servers</h4>
+    <div class="card-panel">
+        <table>
+            <thead>
+                <tr>
+                    <th>name</th>
+                    <th>location</th>
+                    <th>ip</th>
+                    <th>port</th>
+                    <th>rcon</th>
+                    <th>added</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="server in servers">
+                    <td>{{server.name}}</td>
+                    <td>{{server.location}}</td>
+                    <td>{{server.ip}}</td>
+                    <td>{{server.port}}</td>
+                    <td>{{server.rcon}}</td>
+                    <td>{{server.updated}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="section">
+    <h4 class="teal-text text-lighten-1">Players</h4>
+    <div class="card-panel">
+        <table>
+            <thead>
+                <tr>
+                    <th>alias</th>
+                    <th>id</th>
+                    <th>steamId</th>
+                    <th>updated</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="player in players">
+                    <td>{{player.displayName}}</td>
+                    <td><a href="{{player.profileUrl}}" target="_blank">{{player.id}}</a></td>
+                    <td><a href="http://steamrep.com/search?q={{player.steamId}}" target="_blank">{{player.steamId}}</a></td>
+                    <td>{{player.updated}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -1,11 +1,28 @@
-<div class="row">
+<div class="section">
     <h2 class="teal-text text-lighten-1">Profile</h2>
-    <br>
-    <img ng-src="{{::profile.avatarBig}}" />
-    <h5>Alias</h5>
-    <b>{{::profile.displayName}}</b>
-    <h5>Steam ID</h5>
-    <a href="http://steamrep.com/search?q={{::profile.steamId}}">{{::profile.steamId}}</a>
-    <h5>Profile</h5>
-    <a href="{{::profile.profileUrl}}">{{::profile.profileUrl}}</a>
+</div>
+<div class="section">
+    <div class="card-panel">
+        <div class="row">
+            <div class="col s12 m4 l3">
+                <img class="responsive-img circle" ng-src="{{::profile.avatarBig}}" />
+            </div>
+            <div class="col s12 m8 l9">
+                <h5>Alias</h5>
+                <b>{{::profile.displayName}}</b>
+                <h5>Steam ID</h5>
+                <a href="http://steamrep.com/search?q={{::profile.steamId}}" target="_blank">{{::profile.steamId}}</a>
+                <h5>Profile</h5>
+                <a href="{{::profile.profileUrl}}" target="_blank">{{::profile.profileUrl}}</a>
+            </div>
+        </div>
+    </div>
+    <!-- <div class="row">
+        <div class="col s12">
+            <h4 class="teal-text text-lighten-1">Twitch Stream</h4>
+            <div class="card-panel">
+                <iframe src="http://www.twitch.tv/junirok/embed" frameborder="0" scrolling="no" height="400" width="100%"></iframe>
+            </div>
+        </div>
+    </div> -->
 </div>
