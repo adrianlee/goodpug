@@ -82,7 +82,7 @@ module.exports = function(server) {
                     pugs.to("browser").emit('browser update', {
                         id: pug.id,
                         players: pug.players,
-                        status: pug.status
+                        matchStatus: pug.matchStatus
                     });
                 }
                 if (callback) {

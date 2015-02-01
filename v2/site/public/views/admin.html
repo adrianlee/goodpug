@@ -45,29 +45,33 @@
         <li>
             <div class="collapsible-header"><i class="mdi-device-storage"></i>Servers</div>
             <div class="collapsible-body">
-                <a class="waves-effect waves-light btn teal lighten-1" ng-click="refresh()">Force refresh</a>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>name</th>
-                            <th>location</th>
-                            <th>ip</th>
-                            <th>port</th>
-                            <th>rcon</th>
-                            <th>added</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr ng-repeat="server in servers">
-                            <td>{{server.name}}</td>
-                            <td>{{server.location}}</td>
-                            <td>{{server.ip}}</td>
-                            <td>{{server.port}}</td>
-                            <td>{{server.rcon}}</td>
-                            <td>{{server.updated}}</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="section">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>name</th>
+                                <th>location</th>
+                                <th>ip</th>
+                                <th>port</th>
+                                <th>rcon</th>
+                                <th>added</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="server in servers">
+                                <td>{{server.name}}</td>
+                                <td>{{server.location}}</td>
+                                <td>{{server.ip}}</td>
+                                <td>{{server.port}}</td>
+                                <td>{{server.rcon}}</td>
+                                <td>{{server.updated}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="section">
+                    <a class="waves-effect waves-light btn teal lighten-1" ng-click="refresh()">Force pug info refresh on redis</a>
+                </div>
             </div>
         </li>
         <li>

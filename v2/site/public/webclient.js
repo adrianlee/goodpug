@@ -229,7 +229,7 @@ app.factory('serviceFactory', function(ENV) {
         console.log("browser updated", pug);
         if (service.lobbies[pug.id]) {
             service.lobbies[pug.id].players = pug.players;
-            service.lobbies[pug.id].status = pug.status;
+            service.lobbies[pug.id].matchStatus = pug.matchStatus;
         }
         notifyObservers();
     });

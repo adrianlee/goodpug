@@ -15,8 +15,9 @@ Broker.prototype.getPug = function(serverId, callback) {
             var keyIp = ["server", serverId, "ip"].join(":");
             var keyPort = ["server", serverId, "port"].join(":");
             var keyLocation = ["server", serverId, "location"].join(":");
-            var keyStatus = ["server", serverId, "status"].join(":");
-            client.mget([keyId, keyName, keyIp, keyPort, keyLocation, keyStatus], function(err, info) {
+            var keyServerStatus = ["server", serverId, "serverStatus"].join(":");
+            var keyMatchStatus = ["server", serverId, "matchStatus"].join(":");
+            client.mget([keyId, keyName, keyIp, keyPort, keyLocation, keyServerStatus, keyMatchStatus], function(err, info) {
                 cb(err, info);
             });
         },
@@ -33,7 +34,8 @@ Broker.prototype.getPug = function(serverId, callback) {
         server.ip = results.info[2];
         server.port = results.info[3];
         server.location = results.info[4];
-        server.status = results.info[5];
+        server.serverStatus = results.info[5];
+        server.matchStatus = results.info[6];
         server.players = results.players;
         if (!server.id && !server.ip) {
             return callback(err, null);

@@ -10,7 +10,8 @@
                     <th>Server</th>
                     <th>Location</th>
                     <th>Players</th>
-                    <th>Status</th>
+                    <th>Server Status</th>
+                    <th>Match Status</th>
                 </tr>
             </thead>
             <tbody>
@@ -18,9 +19,11 @@
                     <td>{{::pug.name}}</td>
                     <td>{{::pug.location}}</td>
                     <td>{{pug.players | getCount}}/10</td>
-                    <td ng-show="pug.status == 0">NOT LIVE</td>
-                    <td ng-show="pug.status == 1">LIVE</td>
-                    <td ng-show="pug.status == null">UNKNOWN</td>
+                    <td class="green-text text-accent-3" ng-show="pug.serverStatus == 1">ONLINE</td>
+                    <td class="red-text text-accent-2" ng-show="pug.serverStatus == null">OFFLINE</td>
+                    <td ng-show="pug.matchStatus == 0">NOT LIVE</td>
+                    <td ng-show="pug.matchStatus == 1">LIVE</td>
+                    <td ng-show="pug.matchStatus == null">UNKNOWN</td>
                 </tr>
             </tbody>
         </table>
