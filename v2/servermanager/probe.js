@@ -16,7 +16,7 @@ function pingServer(serverId) {
             if (err) {
                 console.error(err)
             } else {
-                console.log(info);
+                // console.log(info);
                 var keyServerStatus = ["server", serverId, "serverStatus"].join(":");
                 r.set(keyServerStatus, 1, redis.print);
                 r.expire(keyServerStatus, 60, redis.print);
@@ -36,4 +36,4 @@ function probe() {
     });
 }
 probe();
-setInterval(probe, 50 * 1000);
+setInterval(probe, 50 * 1000); 
