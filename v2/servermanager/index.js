@@ -8,7 +8,10 @@ var dgram = require('dgram')
 var server = dgram.createSocket('udp4');
 server.on('message', function(message, rinfo) {
     var msg = message.toString('ascii').slice(5, -1);
-    parseMessage(rinfo, msg);
+    getMatchId(rinfo, function(matchId) {
+        console.log("new log for", msg);
+        parseMessage(msg, matchId);
+    });
 });
 server.on('listening', function() {
     var address = server.address();
@@ -37,25 +40,54 @@ var pSay = new RegExp('^"(.+)[<](\\d+)[>][<](.*)[>][<](CT|TERRORIST|Unassigned|S
 var pSayTeam = new RegExp('^"(.+)[<](\\d+)[>][<](.*)[>][<](CT|TERRORIST|Unassigned|Spectator)[>]" say_team "(.*)"');
 var pSwitchTeam = new RegExp('^"(.+)[<](\\d+)[>][<](.*)[>]" switched from team [<](CT|TERRORIST|Unassigned|Spectator)[>] to [<](CT|TERRORIST|Unassigned|Spectator)[>]');
 var pScored = new RegExp('^Team "(CT|TERRORIST)" scored "(\\d+)" with "(\\d+)" players');
+var pMapChanged = new RegExp('^Started map "(.*)" (.*)');
+// fetch match id and cache
+var matchIdCache = {};
+
+function getMatchId(rinfo, callback) {
+    if (matchIdCache[rinfo.address + ":" + rinfo.port]) {
+        callback(matchIdCache[rinfo.address + ":" + rinfo.port].id);
+        return;
+    }
+    r.get("server:" + rinfo.address + ":" + rinfo.port, function(err, matchId) {
+        if (!matchId) {
+            callback();
+            return;
+        }
+        // expire 1 minute
+        matchIdCache[rinfo.address + ":" + rinfo.port] = {
+            id: matchId,
+            expire: new Date(date.getTime() + 60000).getTime()
+        };
+        callback(matchId)
+    });
+};
 // log parser
-function parseMessage(rinfo, msg) {
-    // console.log(rinfo.address, rinfo.port);
+function parseMessage(msg, matchId) {
+    console.log(matchId);
     var split = msg.split(": ");
     var timestamp = split[0];
     var log = split[1];
     var extra = split[2];
     var res;
     // console.log(log, extra);
-
     // test patterns
     if (pKill.test(log)) {
         res = pKill.exec(log);
         console.log(res);
         // name, userid, steamid, team, location_x, location_y, location_z, name, userid, steamid, team, location_x, location_y, location_z, weapon, headshot
-        //r.hset("server:" + rinfo.address + ":" rinfo.port, "")
+        // r.set("server:" + rinfo.address + ":" rinfo.port, "")
+        // r.set("match")
+        if (matchId) {
+            r.hincrby("match:" + matchId + ":" + kills, res[4] /*steamid*/ , 1);
+            r.hincrby("match:" + matchId + ":" + deaths, res[11] /*steamid*/ , 1);
+        }
     } else if (pKillAssist.test(log)) {
         res = pKillAssist.exec(log);
         console.log(res);
+        if (matchId) {
+            r.hincrby("match:" + matchId + ":" + assists, res[4] /*steamid*/ , 1);
+        }
     } else if (pConnected.test(log)) {
         res = pConnected.exec(log);
         console.log(res);
@@ -68,6 +100,10 @@ function parseMessage(rinfo, msg) {
     } else if (pJoinedTeam.test(log)) {
         res = pJoinedTeam.exec(log);
         console.log(res);
+        if (matchId) {
+            r.hincrby("match:" + matchId + ":" + team, res[4] /*steamid*/ , res[6] /*newteam*/ );
+            r.rpush("match:" + matchId + ":logs", res.input);
+        }
     } else if (pRoundStart.test(log)) {
         res = pRoundStart.exec(log);
         console.log(res);
@@ -80,17 +116,36 @@ function parseMessage(rinfo, msg) {
     } else if (pSay.test(log)) {
         res = pSay.exec(log);
         console.log(res);
+        if (matchId) {
+            r.rpush("match:" + matchId + ":logs", res.input);
+        }
     } else if (pSayTeam.test(log)) {
         res = pSayTeam.exec(log);
         console.log(res);
+        if (matchId) {
+            r.rpush("match:" + matchId + ":logs", res.input);
+        }
     } else if (pSwitchTeam.test(log)) {
         res = pSwitchTeam.exec(log);
         console.log(res);
+        if (matchId) {
+            r.hset("match:" + matchId + ":" + team, res[4] /*steamid*/ , res[6] /*newteam*/);
+            r.rpush("match:" + matchId + ":logs", res.input);
+        }
     } else if (pScored.test(log)) {
         res = pScored.exec(log);
         console.log(res);
+        if (matchId) {
+            r.hset("match:" + matchId + ":score", res[2], res[3]);
+        }
+    } else if (pMapChanged.test(log)) {
+        res = pMapChanged.exec(log);
+        console.log(res);
+        if (matchId) {
+            r.hset("match:" + matchId + ":map", res[2]);
+        }
     }
-}
+};
 // LOG EXAMPLES
 /*
 // WORLD

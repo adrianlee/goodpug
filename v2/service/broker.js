@@ -4,17 +4,8 @@ var client = require('./redisClient');
 var mongo = require('./database');
 
 function Broker() {};
-Broker.prototype.init = function() {
-    // client.set("server:n13957f1-095f-1057b-1gn3j:id", "n13957f1-095f-1057b-1gn3j");
-    // client.set("server:n13957f1-095f-1057b-1gn3j:name", "San Francisco #1");
-    // client.set("server:n13957f1-095f-1057b-1gn3j:name", "San Francisco #1");
-    // client.set("server:n13957f1-095f-1057b-1gn3j:ip", "192.168.0.1");
-    // client.set("server:n13957f1-095f-1057b-1gn3j:port", "27015");
-    // client.set("server:n13957f1-095f-1057b-1gn3j:location", "USWEST");
-    // client.set("server:n13957f1-095f-1057b-1gn3j:status", 0);
-    // client.del("server:n13957f1-095f-1057b-1gn3j:players");
-    // client.sadd("server:n13957f1-095f-1057b-1gn3j:players", "irok", "cesar", "ynot", "rich");
-}
+Broker.prototype.init = function() {};
+// get pug from redis
 Broker.prototype.getPug = function(serverId, callback) {
     // Fetch pug info & status from redis
     async.parallel({
@@ -49,7 +40,8 @@ Broker.prototype.getPug = function(serverId, callback) {
         }
         callback(err, server);
     });
-}
+};
+// set pug in redis
 Broker.prototype.setPug = function(server, callback) {
     var keyId = ["server", server._id, "id"].join(":");
     var keyName = ["server", server._id, "name"].join(":");
@@ -61,12 +53,16 @@ Broker.prototype.setPug = function(server, callback) {
     var valueIp = server.ip;
     var valuePort = server.port;
     var valueLocation = server.location;
+    if (!valueId || !valueName || !valueIp || !valuePort || !valueLocation) {
+        return;
+    }
     client.mset(keyId, valueId, keyName, valueName, keyIp, valueIp, keyPort, valuePort, keyLocation, valueLocation);
     client.sadd("server:list", valueId);
     if (callback) {
         callback(null, server._id);
     }
-}
+};
+// list pugs from redis
 Broker.prototype.getPugs = function(callback) {
     var self = this;
     // get server list from redis, getPug on each server
@@ -77,21 +73,38 @@ Broker.prototype.getPugs = function(callback) {
             });
         },
         function(servers, cb) {
-          async.map(servers, self.getPug, function(err, results) {
-            console.log(results);
-            cb(err, results);
-          });
+            async.map(servers, self.getPug, function(err, results) {
+                cb(err, results);
+            });
         }
     ], function(err, results) {
-      callback(err, results);
+        callback(err, results.filter(function(n) {
+            return !!n;
+        }));
     });
-}
+};
+// create new pug on mongo and then refreshpuglist
+Broker.prototype.createPug = function(pug, callback) {
+    var self = this;
+    // get server list from redis, getPug on each server
+    var server = new mongo.Server(pug);
+    server.save(function(err, doc) {
+        self.refreshPugList();
+        callback(err, doc);
+    });
+};
+// get a list of server from mongo and update list on redis
 Broker.prototype.refreshPugList = function(callback) {
     var self = this;
     async.waterfall([
         function(cb) {
             mongo.Server.find({}, "name location ip port", function(err, servers) {
                 cb(err, servers);
+            });
+        },
+        function(servers, cb) {
+            client.del("server:list", function() {
+                cb(null, servers);
             });
         },
         function(servers, cb) {
@@ -102,4 +115,4 @@ Broker.prototype.refreshPugList = function(callback) {
     ], function(err, results) {
         if (callback) callback(err, results);
     });
-}
+};

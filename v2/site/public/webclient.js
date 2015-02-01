@@ -146,17 +146,31 @@ app.controller('mainController', function($rootScope, $scope, apiFactory, profil
     $(".button-collapse").sideNav();
     $('.collapsible').collapsible();
 });
-app.controller('navController', function($rootScope, profileService) {
-});
+app.controller('navController', function($rootScope, profileService) {});
 app.controller('homeController', function() {});
 app.controller('loginController', function() {});
 app.controller('oopsController', function() {});
 app.controller('profileController', function($scope, profile) {
     $scope.profile = profile || {};
 });
-app.controller('adminController', function($scope, playersAndServers) {
+app.controller('adminController', function($scope, playersAndServers, apiFactory) {
     $scope.players = playersAndServers.players || [];
     $scope.servers = playersAndServers.servers || [];
+    $scope.newPug = {};
+    $scope.createPug = function() {
+        apiFactory.createPug($scope.newPug).success(function(profile) {
+            console.log(profile);
+        }).error(function(err, status) {
+            console.log(err, status);
+        });
+    };
+    $scope.refresh = function() {
+        apiFactory.refresh().success(function() {
+            console.log("refreshed list");
+        }).error(function(err, status) {
+            console.log(err, status);
+        });
+    };
 });
 app.controller('browserController', function($scope, $location, apiFactory, serviceFactory, pugs) {
     $scope.pugs = pugs || {};
@@ -275,7 +289,6 @@ app.factory('apiFactory', function($http, ENV) {
         if (!id) {
             return $http.get('/profile');
         }
-        
         return $http.get('/profile/' + id);
     };
     profile.getPlayersAndServers = function() {
@@ -287,17 +300,22 @@ app.factory('apiFactory', function($http, ENV) {
     profile.getPug = function(id) {
         return $http.get(ENV.serviceEndpoint + '/pug/' + id);
     };
+    profile.createPug = function(pug) {
+        return $http.post(ENV.serviceEndpoint + '/pug', pug);
+    };
+    profile.refresh = function() {
+        return $http.get(ENV.serviceEndpoint + '/refresh');
+    };
     return profile;
 });
 // services
 app.service('profileService', function() {
     this.loggedIn = false;
     this.profile = {};
-    this.isAdmin = function () {
+    this.isAdmin = function() {
         if (this.profile.id == "76561197961790405") {
             return true;
         }
-
         return false;
     }
     this.forceReload = function() {

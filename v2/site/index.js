@@ -61,41 +61,39 @@ app.get('/profile', ensureAuthenticated, function(req, res) {
 });
 app.get('/profile/:id', ensureAuthenticated, function(req, res) {
     if (!req.params.id) {
-      return res.sendStatus(404);
-    }
-
-    db.Player.findOne({ id: req.params.id }, function (err, profile) {
-      if (err) return res.sendStatus(500);
-      if (!profile) {
         return res.sendStatus(404);
-      }
-      res.send(profile);
-    }); 
+    }
+    db.Player.findOne({
+        id: req.params.id
+    }, function(err, profile) {
+        if (err) return res.sendStatus(500);
+        if (!profile) {
+            return res.sendStatus(404);
+        }
+        res.send(profile);
+    });
 });
-app.get('/admin', ensureAuthenticated, function (req, res) {
-  if (req.user.id !== "76561197961790405") {
-    res.sendStatus(403);
-    return;
-  }
-
-  var fetchPlayers = function (callback) {
-    db.Player.find({}, function (err, docs) {
-      callback(err, docs);
-    });  
-  };
-
-  var fetchServers = function (callback) {
-    db.Server.find({}, function (err, docs) {
-      callback(err, docs);
-    });  
-  }
-  
-  async.parallel({
-    players: fetchPlayers,
-    servers: fetchServers
-  }, function (err, results) {
-    res.send(results);
-  });
+app.get('/admin', ensureAuthenticated, function(req, res) {
+    if (!req.isAdmin) {
+        res.sendStatus(403);
+        return;
+    }
+    var fetchPlayers = function(callback) {
+        db.Player.find({}, function(err, docs) {
+            callback(err, docs);
+        });
+    };
+    var fetchServers = function(callback) {
+        db.Server.find({}, function(err, docs) {
+            callback(err, docs);
+        });
+    }
+    async.parallel({
+        players: fetchPlayers,
+        servers: fetchServers
+    }, function(err, results) {
+        res.send(results);
+    });
 });
 // static files
 app.use(express.static(__dirname + '/public'));
@@ -116,6 +114,9 @@ app.get('/', function(req, res) {
 // helper functions
 function ensureAuthenticated(req, res, next) {
     if (req.isAuthenticated()) {
+        if (req.user.id == "76561197961790405") {
+            req.isAdmin = true;
+        }
         return next();
     }
     res.send(401);

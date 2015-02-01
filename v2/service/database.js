@@ -49,7 +49,7 @@ var Server = mongoose.model('Server', {
   ip: String,
   port: String,
   rcon: String,
-  location: { type: String, enum: ["USWEST", "USEAST", "USCENTRAL"] },
+  location: { type: String, enum: ["uswest", "useast", "uscentral"] },
   updated: { type: Date, default: Date.now }
 });
 
