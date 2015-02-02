@@ -194,11 +194,12 @@ app.controller('browserController', function($scope, $location, apiFactory, serv
     };
     serviceFactory.registerObserverCallback(updatePugs);
 });
-app.controller('lobbyController', function($scope, pug, serviceFactory, profileService) {
+app.controller('lobbyController', function($scope, pug, serviceFactory, profileService, apiFactory) {
+    var maxPlayers = 2;
     $scope.pug = pug;
     serviceFactory.lobbyJoin(pug.id, profileService.profile);
     var heartbeat = setInterval(function() {
-        console.log("heartbeat");
+        if ($scope.pug && $scope.pug.matchStatus == null) return;
         serviceFactory.lobbyHeartbeat();
     }, 45 * 1000);
     $scope.$on("$destroy", function() {
@@ -217,6 +218,7 @@ app.controller('lobbyController', function($scope, pug, serviceFactory, profileS
     };
     $scope.ready = function() {
         if ($scope.pug && $scope.pug.matchStatus !== null) return;
+        if ($scope.pug.players && $scope.pug.players.length != maxPlayers) return;
         serviceFactory.lobbyReady();
     };
     $scope.connect = function() {
@@ -225,10 +227,31 @@ app.controller('lobbyController', function($scope, pug, serviceFactory, profileS
             location.href = "steam://connect/" + $scope.pug.ip + ":" + $scope.pug.port;
         }
     };
+    $scope.resetMatchStatus = function() {
+        if (!$scope.pug) return;
+        apiFactory.resetMatchStatus($scope.pug.id).success(function() {
+            console.log("reset match status");
+            location.reload();
+        }).error(function(err, status) {
+            console.log(err, status);
+        });
+    };
     var updateLobby = function() {
         // update pug info if joined
         if (serviceFactory.currentLobby) {
             $scope.pug = serviceFactory.currentLobby;
+            // should the ready button be enabled
+            if ($scope.pug.players.length == maxPlayers) {
+                $scope.readyButtonEnabled = true;
+            } else {
+                $scope.readyButtonEnabled = false;
+            }
+            // did we join the lobby?
+            if ($scope.pug.players.indexOf(profileService.profile.displayName) > -1) {
+                $scope.inLobby = true;
+            } else {
+                $scope.inLobby = false;
+            }
         }
         $scope.$apply();
     };
@@ -331,6 +354,9 @@ app.factory('apiFactory', function($http, ENV) {
     };
     profile.refresh = function() {
         return $http.get(ENV.serviceEndpoint + '/refresh');
+    };
+    profile.resetMatchStatus = function(sid) {
+        return $http.get(ENV.serviceEndpoint + '/resetMatchStatus/' + sid);
     };
     return profile;
 });

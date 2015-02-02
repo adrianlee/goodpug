@@ -128,3 +128,10 @@ Broker.prototype.refreshPugList = function(callback) {
         if (callback) callback(err, results);
     });
 };
+// get a list of server from mongo and update list on redis
+Broker.prototype.resetMatchStatus = function(serverId, callback) {
+    var keyMatchStatus = ["server", serverId, "matchStatus"].join(":");
+    client.del(keyMatchStatus, function(err, res) {
+        callback(err, res);
+    });
+};

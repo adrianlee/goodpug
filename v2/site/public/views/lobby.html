@@ -35,8 +35,10 @@
                 </div>
             </div>
         </div>
-        <button class="waves-effect waves-light btn teal lighten-1" ng-click="join()">Join lobby</button>
-        <button class="waves-effect waves-light btn teal lighten-1" ng-click="ready()">Ready up</button>
-        <button class="waves-effect waves-light btn teal lighten-1" ng-click="connect()">Join server</button>
+        <button class="waves-effect waves-light btn teal lighten-1" ng-click="join()" ng-show="!pug.matchStatus && !inLobby">Join lobby</button>
+        <button class="waves-effect waves-light btn teal lighten-1" ng-click="ready()" ng-disabled="!readyButtonEnabled" ng-show="!pug.matchStatus && inLobby">Ready up</button>
+        <button class="waves-effect waves-light btn teal lighten-1" ng-click="connect()" ng-disabled="!pug.matchStatus" ng-show="pug.matchStatus">Join server</button>
+        <div class="divider"></div>
+        <button class="waves-effect waves-light btn teal lighten-1" ng-click="resetMatchStatus()">Reset match status</button>
     </div>
 </div>

@@ -43,6 +43,13 @@ app.get('/refresh', function(req, res) {
       res.send(true)
     });
 });
+// authenticated call
+app.get('/resetMatchStatus/:sid', function(req, res) {
+    broker.resetMatchStatus(req.params && req.params.sid, function (err, list) {
+      if (err) return res.send(404, err);
+      res.send(true)
+    });
+});
 var server = app.listen(4000);
 // WEBSOCKET
 var ws = require("./websocket")(server);

@@ -71,6 +71,8 @@ module.exports = function(server) {
                                 client.set(keyMatchStatus, 1, function(err, res) {
                                     return updateLobbyAndBrowser();
                                 });
+                            } else {
+                                updateLobbyAndBrowser();
                             }
                         });
                     } else {
@@ -104,12 +106,13 @@ module.exports = function(server) {
             console.log(socket.displayName, "disconnect");
             // update redis
             var key = ["server", socket.currentLobbyId, "players"].join(":");
-            client.srem(key, socket.displayName, redis.print);
-            // update lobby
-            updateLobbyAndBrowser(function() {
-                // dispose
-                socket.leave(socket.currentLobbyId);
-                socket.currentLobbyId = null;
+            client.srem(key, socket.displayName, function(err, res) {
+                // update lobby
+                updateLobbyAndBrowser(function() {
+                    // dispose
+                    socket.leave(socket.currentLobbyId);
+                    socket.currentLobbyId = null;
+                });
             });
         });
         // helper functions
@@ -121,6 +124,7 @@ module.exports = function(server) {
                     // if we don't have a full lobby, clear the ready list.
                     if (pug.players && pug.players.length !== maxPlayers) {
                         clearReadyPlayers(socket);
+                        pug.playersReady = [];
                     }
                     // update room
                     pugs.to(socket.currentLobbyId).emit('lobby update', pug);
