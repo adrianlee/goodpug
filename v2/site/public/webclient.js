@@ -197,17 +197,33 @@ app.controller('browserController', function($scope, $location, apiFactory, serv
 app.controller('lobbyController', function($scope, pug, serviceFactory, profileService) {
     $scope.pug = pug;
     serviceFactory.lobbyJoin(pug.id, profileService.profile);
+    var heartbeat = setInterval(function() {
+        console.log("heartbeat");
+        serviceFactory.lobbyHeartbeat();
+    }, 45 * 1000);
     $scope.$on("$destroy", function() {
         serviceFactory.lobbyLeave();
         serviceFactory.unregisterObserverCallback(updateLobby);
+        clearInterval(heartbeat);
     });
     $scope.join = function() {
+        if ($scope.pug && $scope.pug.matchStatus !== null) return;
         for (var i in $scope.pug.players) {
             if ($scope.pug.players[i] == profileService.profile.displayName) {
                 return console.log("already joined");
             }
         }
         serviceFactory.lobbyJoin(pug.id, profileService.profile);
+    };
+    $scope.ready = function() {
+        if ($scope.pug && $scope.pug.matchStatus !== null) return;
+        serviceFactory.lobbyReady();
+    };
+    $scope.connect = function() {
+        if ($scope.pug && $scope.pug.matchStatus == null) return;
+        if ($scope.pug.ip && $scope.pug.port) {
+            location.href = "steam://connect/" + $scope.pug.ip + ":" + $scope.pug.port;
+        }
     };
     var updateLobby = function() {
         // update pug info if joined
@@ -256,6 +272,16 @@ app.factory('serviceFactory', function(ENV) {
             id: pugId,
             displayName: profile.displayName
         });
+    };
+    service.lobbyReady = function() {
+        // ready
+        console.log("lobby ready");
+        socket.emit("lobby ready");
+    };
+    service.lobbyHeartbeat = function() {
+        // heartbeat
+        console.log("lobby heartbeat");
+        socket.emit("lobby heartbeat");
     };
     service.lobbyLeave = function() {
         // leave

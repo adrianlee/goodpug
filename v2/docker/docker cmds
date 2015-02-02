@@ -10,3 +10,14 @@ sudo docker run -t -i -p 27015:27015 -p 27016:27016 -p 27015:27015/udp -p 27016:
 
 // custom
 ./srcds_run -game csgo -console -usercon -secure -autoupdate +sv_pure 0 -nohltv +game_type 3 +game_mode 0 +map de_dust2 -tickrate 128 +hostport 27015 -maxplayers_override 20
+
+// custom w/ ip
+./srcds_run -game csgo -console -usercon -secure -autoupdate +sv_pure 0 -nohltv +game_type 3 +game_mode 0 +map de_dust2 -tickrate 128 +hostport 27015 +ip 162.243.149.110 +net_public_adr 162.243.149.110 -maxplayers_override 20
+
+
+sudo docker run -t -i -p 27015:27015 -p 27015:27015/udp irok/server:latest /bin/bash
+
+sudo docker attach edd
+sudo docker ps -a
+sudo docker commit -m "update steam 1/9" 5c71 irok/server
+sudo docker push irok/server

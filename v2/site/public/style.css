@@ -3,6 +3,9 @@ html {
 }
 body {
     background: url("http://i.imgur.com/ymihu2g.jpg") no-repeat center center fixed;
+    /*background: url("http://i.imgur.com/8erZe7x.png") no-repeat center center fixed;*/
+    /*background: url("/plain.jpg") no-repeat center center fixed;*/
+    /*background-color: #455a64;*/
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;

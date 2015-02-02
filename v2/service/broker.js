@@ -7,6 +7,9 @@ function Broker() {};
 Broker.prototype.init = function() {};
 // get pug from redis
 Broker.prototype.getPug = function(serverId, callback) {
+    if (!serverId) {
+        return;
+    }
     // Fetch pug info & status from redis
     async.parallel({
         info: function(cb) {
@@ -26,6 +29,12 @@ Broker.prototype.getPug = function(serverId, callback) {
             client.smembers(keyPlayers, function(err, players) {
                 cb(err, players);
             });
+        },
+        playersReady: function(cb) {
+            var keyPlayersReady = ["server", serverId, "ready"].join(":");
+            client.smembers(keyPlayersReady, function(err, players) {
+                cb(err, players);
+            });
         }
     }, function(err, results) {
         var server = {};
@@ -37,6 +46,7 @@ Broker.prototype.getPug = function(serverId, callback) {
         server.serverStatus = results.info[5];
         server.matchStatus = results.info[6];
         server.players = results.players;
+        server.playersReady = results.playersReady;
         if (!server.id && !server.ip) {
             return callback(err, null);
         }

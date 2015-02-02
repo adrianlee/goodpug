@@ -19,6 +19,7 @@ module.exports = function(server) {
     // PUGS
     var pugs = io.of('/pugs');
     pugs.on('connection', function(socket) {
+        var maxPlayers = 2;
         console.log(socket.handshake.headers.cookie);
         // lobby
         socket.on('lobby join', function(data) {
@@ -30,11 +31,52 @@ module.exports = function(server) {
             socket.join(socket.currentLobbyId);
             // get latest lobby info
             broker.getPug(socket.currentLobbyId, function(err, pug) {
-                // add user to redis
-                var key = ["server", socket.currentLobbyId, "players"].join(":");
-                client.sadd(key, socket.displayName, redis.print);
-                // get lobby info with new player
-                updateLobbyAndBrowser();
+                if (pug.matchStatus == null) {
+                    if (pug.players.length < maxPlayers) {
+                        // add user to redis
+                        var keyPlayers = ["server", socket.currentLobbyId, "players"].join(":");
+                        var keyReadyPlayers = ["server", socket.currentLobbyId, "ready"].join(":");
+                        client.sadd(keyPlayers, socket.displayName, redis.print);
+                        client.expire(keyPlayers, 60);
+                        // get lobby info with new player
+                        updateLobbyAndBrowser();
+                    }
+                }
+            });
+        });
+        socket.on('lobby heartbeat', function(data) {
+            if (!socket.displayName || !socket.currentLobbyId) return;
+            // do we need this?
+            broker.getPug(socket.currentLobbyId, function(err, pug) {
+                if (pug.matchStatus == null) {
+                    if (pug.players && pug.players.indexOf(socket.displayName) > -1) {
+                        var keyPlayers = ["server", socket.currentLobbyId, "players"].join(":");
+                        client.sadd(keyPlayers, socket.displayName, redis.print);
+                        client.expire(keyPlayers, 60);
+                    }
+                }
+            });
+        });
+        socket.on('lobby ready', function() {
+            console.log("ready", socket.displayName, socket.currentLobbyId);
+            var keyPlayers = ["server", socket.currentLobbyId, "players"].join(":");
+            var keyPlayersReady = ["server", socket.currentLobbyId, "ready"].join(":");
+            client.sadd(keyPlayersReady, socket.displayName, function(err, res) {
+                client.smembers(keyPlayers, function(err, res) {
+                    if (res.length == maxPlayers) {
+                        client.sdiff(keyPlayers, keyPlayersReady, function(err, res) {
+                            if (res && res.length == 0) {
+                                console.log("CREATED MATCH");
+                                var keyMatchStatus = ["server", socket.currentLobbyId, "matchStatus"].join(":");
+                                client.set(keyMatchStatus, 1, function(err, res) {
+                                    return updateLobbyAndBrowser();
+                                });
+                            }
+                        });
+                    } else {
+                        updateLobbyAndBrowser();
+                    }
+                });
             });
         });
         socket.on('lobby leave', function() {
@@ -76,6 +118,10 @@ module.exports = function(server) {
             broker.getPug(socket.currentLobbyId, function(err, pug) {
                 if (err) return console.error(err);
                 if (pug) {
+                    // if we don't have a full lobby, clear the ready list.
+                    if (pug.players && pug.players.length !== maxPlayers) {
+                        clearReadyPlayers(socket);
+                    }
                     // update room
                     pugs.to(socket.currentLobbyId).emit('lobby update', pug);
                     // update pugs list
@@ -89,6 +135,14 @@ module.exports = function(server) {
                     callback();
                 }
             });
-        }
+        };
+
+        function clearReadyPlayers(socket) {
+            console.log("clearReadyPlayers");
+            if (socket.currentLobbyId && socket.displayName) {
+                var key = ["server", socket.currentLobbyId, "ready"].join(":");
+                client.del(key, redis.print);
+            }
+        };
     });
 }

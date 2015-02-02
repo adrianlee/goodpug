@@ -8,17 +8,35 @@
     <div ng-show="pug">
         <h4 class="teal-text text-lighten-2">{{::pug.name}}</h4>
         <div class="card-panel">
-            <h5>Location</h5>
-            {{::pug.location}}
-            <h5>Status</h5>
-            <span ng-show="pug.status == 0">NOT LIVE</span>
-            <span ng-show="pug.status == 1">LIVE</span>
-            <span ng-show="pug.status == null">UNKNOWN</span>
-            <h5>Players</h5>
-            {{pug.players}}
+            <div class="row">
+                <div class="col s12 m6">
+                    <h5>Match Status</h5>
+                    <span ng-show="pug.matchStatus == 1">LIVE</span>
+                    <span ng-show="pug.matchStatus != 1">NOT LIVE</span>
+                </div>
+                <div class="col s12 m6">
+                    <h5>Server Status</h5>
+                    <span class="green-text text-accent-3" ng-show="pug.serverStatus !== null">ONLINE</span>
+                    <span class="red-text text-accent-2" ng-show="pug.serverStatus == null">OFFLINE</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <h5>Location</h5>
+                    {{::pug.location}}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <h5>Players</h5>
+                    {{pug.players}}
+                    <h5>Players Ready</h5>
+                    {{pug.playersReady}}
+                </div>
+            </div>
         </div>
         <button class="waves-effect waves-light btn teal lighten-1" ng-click="join()">Join lobby</button>
-        <button class="waves-effect waves-light btn teal lighten-1">Ready up</button>
-        <button class="waves-effect waves-light btn teal lighten-1">Join server</button>
+        <button class="waves-effect waves-light btn teal lighten-1" ng-click="ready()">Ready up</button>
+        <button class="waves-effect waves-light btn teal lighten-1" ng-click="connect()">Join server</button>
     </div>
 </div>
