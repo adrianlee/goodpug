@@ -195,11 +195,10 @@ app.controller('browserController', function($scope, $location, apiFactory, serv
     serviceFactory.registerObserverCallback(updatePugs);
 });
 app.controller('lobbyController', function($scope, pug, serviceFactory, profileService, apiFactory) {
-    var maxPlayers = 2;
     $scope.pug = pug;
     serviceFactory.lobbyJoin(pug.id, profileService.profile);
     var heartbeat = setInterval(function() {
-        if ($scope.pug && $scope.pug.matchStatus == null) return;
+        if ($scope.pug && $scope.pug.matchStatus) return;
         serviceFactory.lobbyHeartbeat();
     }, 45 * 1000);
     $scope.$on("$destroy", function() {
@@ -218,7 +217,7 @@ app.controller('lobbyController', function($scope, pug, serviceFactory, profileS
     };
     $scope.ready = function() {
         if ($scope.pug && $scope.pug.matchStatus !== null) return;
-        if ($scope.pug.players && $scope.pug.players.length != maxPlayers) return;
+        if ($scope.pug.players && $scope.pug.players.length.toString() !== $scope.pug.maxPlayers) return;
         serviceFactory.lobbyReady();
     };
     $scope.connect = function() {
@@ -241,7 +240,7 @@ app.controller('lobbyController', function($scope, pug, serviceFactory, profileS
         if (serviceFactory.currentLobby) {
             $scope.pug = serviceFactory.currentLobby;
             // should the ready button be enabled
-            if ($scope.pug.players.length == maxPlayers) {
+            if ($scope.pug.players.length == $scope.pug.maxPlayers) {
                 $scope.readyButtonEnabled = true;
             } else {
                 $scope.readyButtonEnabled = false;

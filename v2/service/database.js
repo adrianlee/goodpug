@@ -50,9 +50,17 @@ var Server = mongoose.model('Server', {
   port: String,
   rcon: String,
   location: { type: String, enum: ["uswest", "useast", "uscentral"] },
-  updated: { type: Date, default: Date.now }
+  updated: { type: Date, default: Date.now },
+  maxPlayers: { type: Number, default: 10 }
+});
+
+var Match = mongoose.model('Match', {
+  server: { type: mongoose.Schema.Types.ObjectId, ref: 'Server' },
+  players: [ String ],
+  created: { type: Date, default: Date.now }
 });
 
 module.exports.mongoose = mongoose;
 module.exports.Player = Player;
 module.exports.Server = Server;
+module.exports.Match = Match;

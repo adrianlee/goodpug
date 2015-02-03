@@ -20,7 +20,8 @@ Broker.prototype.getPug = function(serverId, callback) {
             var keyLocation = ["server", serverId, "location"].join(":");
             var keyServerStatus = ["server", serverId, "serverStatus"].join(":");
             var keyMatchStatus = ["server", serverId, "matchStatus"].join(":");
-            client.mget([keyId, keyName, keyIp, keyPort, keyLocation, keyServerStatus, keyMatchStatus], function(err, info) {
+            var keyMaxPlayers = ["server", serverId, "maxPlayers"].join(":");
+            client.mget([keyId, keyName, keyIp, keyPort, keyLocation, keyServerStatus, keyMatchStatus, keyMaxPlayers], function(err, info) {
                 cb(err, info);
             });
         },
@@ -45,6 +46,7 @@ Broker.prototype.getPug = function(serverId, callback) {
         server.location = results.info[4];
         server.serverStatus = results.info[5];
         server.matchStatus = results.info[6];
+        server.maxPlayers = results.info[7] || 10;
         server.players = results.players;
         server.playersReady = results.playersReady;
         if (!server.id && !server.ip) {
@@ -60,15 +62,17 @@ Broker.prototype.setPug = function(server, callback) {
     var keyIp = ["server", server._id, "ip"].join(":");
     var keyPort = ["server", server._id, "port"].join(":");
     var keyLocation = ["server", server._id, "location"].join(":");
+    var keyMaxPlayers = ["server", server._id, "maxPlayers"].join(":");
     var valueId = server._id;
     var valueName = server.name;
     var valueIp = server.ip;
     var valuePort = server.port;
     var valueLocation = server.location;
-    if (!valueId || !valueName || !valueIp || !valuePort || !valueLocation) {
+    var valueMaxPlayers = server.maxPlayers;
+    if (!valueId || !valueName || !valueIp || !valuePort || !valueLocation || !valueMaxPlayers) {
         return;
     }
-    client.mset(keyId, valueId, keyName, valueName, keyIp, valueIp, keyPort, valuePort, keyLocation, valueLocation);
+    client.mset(keyId, valueId, keyName, valueName, keyIp, valueIp, keyPort, valuePort, keyLocation, valueLocation, keyMaxPlayers, valueMaxPlayers);
     client.sadd("server:list", valueId);
     if (callback) {
         callback(null, server._id);
@@ -110,7 +114,7 @@ Broker.prototype.refreshPugList = function(callback) {
     var self = this;
     async.waterfall([
         function(cb) {
-            mongo.Server.find({}, "name location ip port", function(err, servers) {
+            mongo.Server.find({}, "name location ip port maxPlayers", function(err, servers) {
                 cb(err, servers);
             });
         },
@@ -135,3 +139,10 @@ Broker.prototype.resetMatchStatus = function(serverId, callback) {
         callback(err, res);
     });
 };
+// create match
+Broker.prototype.createMatch = function(args, callback) {
+    var match = new mongo.Match(args);
+    match.save(function(err, doc) {
+        callback(err, doc);
+    });
+}
