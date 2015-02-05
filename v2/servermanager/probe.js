@@ -10,13 +10,12 @@ function pingServer(serverId) {
     r.mget([
         ["server", serverId, "ip"].join(":"), ["server", serverId, "port"].join(":")
     ], function(err, res) {
-        console.log(res);
-        var client = srcds('104.236.154.12', 27015);
+        var client = srcds(res[0], res[1]);
         client.info(function(err, info) {
             if (err) {
-                console.error(err)
+                console.error(err);
             } else {
-                // console.log(info);
+                console.log(res[0], res[1], "has a heartbeat");
                 var keyServerStatus = ["server", serverId, "serverStatus"].join(":");
                 r.set(keyServerStatus, 1, redis.print);
                 r.expire(keyServerStatus, 60, redis.print);
