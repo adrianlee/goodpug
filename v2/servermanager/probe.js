@@ -19,7 +19,7 @@ function pingServer(serverId) {
                 console.log(res[0], res[1], "has a heartbeat");
                 var keyServerStatus = ["server", serverId, "serverStatus"].join(":");
                 r.set(keyServerStatus, 1, redis.print);
-                r.expire(keyServerStatus, 60, redis.print);
+                r.expire(keyServerStatus, 30, redis.print);
             }
             client.close();
         });
@@ -36,4 +36,4 @@ function probe() {
     });
 }
 probe();
-setInterval(probe, 50 * 1000); 
+setInterval(probe, 20 * 1000); 
