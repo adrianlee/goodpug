@@ -8,7 +8,8 @@ var srcds = require('srcds-info');
 
 function pingServer(serverId) {
     r.mget([
-        ["server", serverId, "ip"].join(":"), ["server", serverId, "port"].join(":")
+        ["server", serverId, "ip"].join(":"),
+        ["server", serverId, "port"].join(":")
     ], function(err, res) {
         var client = srcds(res[0], res[1]);
         client.info(function(err, info) {

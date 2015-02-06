@@ -182,6 +182,10 @@ app.controller('browserController', function($scope, $location, apiFactory, serv
     });
     // scope functions
     $scope.join = function(pug) {
+        if (!pug.serverStatus) {
+          toast(pug.name + " is temporarily offline.", 2000);
+          return;
+        }
         $location.path("/pug/" + pug.id);
     };
     // observer
