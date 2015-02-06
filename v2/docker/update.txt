@@ -1,0 +1,6 @@
+@ShutdownOnFailedCommand 1
+@NoPromptForPassword 1
+login anonymous
+force_install_dir /home/docker/steamcmd/csgo
+app_update 740 validate
+quit
