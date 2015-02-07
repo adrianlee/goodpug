@@ -63,3 +63,30 @@ a {
 .collapsible-body {
   padding: 20px;
 }
+
+.lobby-dp {
+  width: 1.5rem;
+  height: 1.5rem;
+  margin-right: 15px;
+}
+
+.lobby-team-header {
+  position: relative;
+}
+
+.lobby-join-team {
+  position: absolute;
+  right: 15px;
+  top: 15px;
+}
+
+.lobby-chat {
+  padding: 0;
+  height: 200px;
+  overflow-y: scroll;
+  white-space: pre-wrap;      /* CSS3 */   
+  white-space: -moz-pre-wrap; /* Firefox */    
+  white-space: -pre-wrap;     /* Opera <7 */   
+  white-space: -o-pre-wrap;   /* Opera 7 */    
+  word-wrap: break-word;      /* IE */
+}

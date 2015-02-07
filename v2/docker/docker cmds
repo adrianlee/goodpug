@@ -1,6 +1,7 @@
 // run container
 sudo docker run -t -i -p 27015:27015 -p 27015:27015/udp irok/goodpug:latest /bin/bash
-sudo docker run -t -i -p 27016:27016 -p 27016:27016/udp irok/goodpug:latest /bin/bash
+sudo docker run -t -i -p 27015:27015 -p 27020:27020 -p 27015:27015/udp -p 27020:27020/udp irok/goodpug:latest /bin/bash
+sudo docker run -t -i -p 27016:27016 -p 27021:27021 -p 27016:27016/udp -p 27021:27021/udp irok/goodpug:latest /bin/bash
 
 // run container w/ workding dir
 sudo docker run -t -i -p 27015:27015 -p 27016:27016 -p 27015:27015/udp -p 27016:27016/udp -w="/home/goodpug/steamcmd/csgo" irok/server:latest "/bin/bash" "./start"
@@ -10,7 +11,9 @@ sudo docker run -t -i -p 27015:27015 -p 27016:27016 -p 27015:27015/udp -p 27016:
 
 
 // community comp w/ update
-./srcds_run -game csgo -console -usercon -secure -autoupdate -steam_dir /home/docker/steamcmd -steamcmd_script /home/docker/steamcmd/update.txt  +sv_pure 0 +tv_port 27020 +game_type 0 +game_mode 1 +map de_dust2 -tickrate 128 +hostport 27016 -maxplayers_override 10
+./srcds_run -game csgo -console -usercon -secure -autoupdate -steam_dir /home/docker/steamcmd -steamcmd_script /home/docker/steamcmd/update.txt  +sv_pure 0 +game_type 0 +game_mode 1 +map de_dust2 -tickrate 128 +hostport 27015 +tv_port 27020 -maxplayers_override 10
+
+./srcds_run -game csgo -console -usercon -secure -autoupdate -steam_dir /home/docker/steamcmd -steamcmd_script /home/docker/steamcmd/update.txt  +sv_pure 0 +game_type 0 +game_mode 1 +map de_dust2 -tickrate 128 +hostport 27016 +tv_port 27021 -maxplayers_override 10
 
 // custom
 ./srcds_run -game csgo -console -usercon -secure -autoupdate +sv_pure 0 -nohltv +game_type 3 +game_mode 0 +map de_dust2 -tickrate 128 +hostport 27015 -maxplayers_override 20

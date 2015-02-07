@@ -1,44 +1,106 @@
 <div class="section">
-    <h2 class="teal-text text-lighten-1">Lobby</h2>
+    <h3 class="teal-text text-lighten-1">Lobby {{::pug.name}}</h3>
 </div>
-<div class="section">
-    <div ng-hide="pug">
-        pug not found
-    </div>
-    <div ng-show="pug">
-        <h4 class="teal-text text-lighten-2">{{::pug.name}}</h4>
-        <div class="card-panel">
-            <div class="row">
-                <div class="col s12 m6">
-                    <h5>Match Status {{pug.matchStatus}}</h5>
-                    <span ng-show="pug.matchStatus">LIVE</span>
-                    <span ng-show="!pug.matchStatus">NOT LIVE</span>
-                </div>
-                <div class="col s12 m6">
-                    <h5>Server Status</h5>
-                    <span class="green-text text-accent-3" ng-show="pug.serverStatus">ONLINE</span>
-                    <span class="red-text text-accent-2" ng-show="!pug.serverStatus">OFFLINE</span>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col">
-                    <h5>Location</h5>
-                    {{::pug.location}}
-                </div>
-            </div>
-            <div class="row">
-                <div class="col">
-                    <h5>Players ({{pug.players.length}}/{{::pug.maxPlayers}})</h5>
-                    {{pug.players}}
-                    <h5>Players Ready</h5>
-                    {{pug.playersReady}}
-                </div>
+<div class="section" ng-show="pug">
+    <div class="row" ng-show="readyButtonEnabled">
+        <div class="col s12">
+            <h3>MATCH FOUND</h3>
+            <blockquote class="flow-text">
+                Be nice to others and others will be nice to you.
+            </blockquote>
+            <blockquote class="flow-text">
+                A eros facilisis consequat parturient bibendum porttitor vestibulum in ad dis ullamcorper vestibulum potenti natoque a imperdiet.
+            </blockquote>
+            <div class="action-bar">
+                <a ng-click="ready()" class="waves-effect waves-green btn-large modal-action modal-close" style="width: 100%">Agree</a>
+                <a href="#/pugs" class="waves-effect waves-green btn modal-action modal-close" style="width: 100%">Leave</a>
             </div>
         </div>
-        <button class="waves-effect waves-light btn teal lighten-1" ng-click="join()" ng-show="!pug.matchStatus && !inLobby">Join lobby</button>
-        <button class="waves-effect waves-light btn teal lighten-1" ng-click="ready()" ng-disabled="!readyButtonEnabled" ng-show="!pug.matchStatus && inLobby">Ready up</button>
-        <button class="waves-effect waves-light btn teal lighten-1" ng-click="connect()" ng-disabled="!pug.matchStatus" ng-show="pug.matchStatus">Join server</button>
-        <div class="divider"></div>
-        <button class="waves-effect waves-light btn teal lighten-1" ng-click="resetMatchStatus()">Reset match status</button>
+    </div>
+    <h4 class="teal-text text-lighten-2">Choose a team</h4>
+    <div class="row">
+        <div class="col s12 m6">
+            <ul class="collection with-header">
+                <li class="collection-header lobby-team-header">
+                    <h5>Team A</h5>
+                    <button class="waves-effect waves-light btn teal lighten-1 lobby-join-team" ng-hide="readyButtonEnabled">join</button>
+                </li>
+                <li class="collection-item" ng-repeat="player in teamA">
+                    <img class="circle lobby-dp" ng-src="{{player.image}}" />
+                    {{player.name}}
+                </li>
+            </ul>
+        </div>
+        <div class="col s12 m6">
+            <ul class="collection with-header">
+                <li class="collection-header lobby-team-header">
+                    <h5>Team B</h5>
+                    <button class="waves-effect waves-light btn teal lighten-1 lobby-join-team" ng-hide="readyButtonEnabled">join</button>
+                </li>
+                <li class="collection-item" ng-repeat="player in teamB">
+                    <img class="circle lobby-dp" ng-src="{{player.image}}" />
+                    {{player.name}}
+                </li>
+            </ul>
+        </div>
+    </div>
+    <!-- <h4 class="teal-text text-lighten-2">Vote for a map</h4>
+            <div class="row">
+                <div class="col s12 m3 l2">
+                                map
+                </div>
+    </div> -->
+    <!-- <h4 class="teal-text text-lighten-2">Chat</h4>
+        <div class="lobby-chat card-panel">
+                <b>jnu</b>: asdfasdfasdf
+                <b>jnu</b>: asdfasdfasdf
+                <b>finsd</b>: asdfasd
+                <b>ceci</b>: asdfasdfasdf
+                <b>finsd</b>: asdfasdfasd
+                <b>asdfasdfas</b>: asdfasdfasdf
+                <b>jnu</b>: asdfasdfasdf
+                <b>ceci</b>: asdfasdfasdf
+                <b>finsd</b>: asdfasdfasdfasdflasdkfj;lasdjfl;asdkfjl;asdk fjasdl;kfj;asdlfjkasdfasdfasdfasdfasdflasdk fj;lasdjfl;asdkfjl;asdkfjasdl;kfj;asdlfjkasdfasdfasdfasdfasdflasdkfj;lasdjfl;asdkfjl;asdkfjasdl;kfj;asdlfjkasdfasdfasdfasdfasdflasdkfj;lasdjfl;asdkfjl;as dkfjasdl;kfj;asdlfjkasdf
+                <b>asdfasdfas</b>: asdfasdfasdf
+                <b>ceci</b>: asdfasdfasdf
+                <b>asdfasdfas</b>: asdfasasdffasdfdfasdf
+                <b>jnu</b>: asdfasdfasdf
+                <b>asdfasdfas</b>: asdfasdfasdf
+                <b>finsd</b>: asdfasdfasdf
+                <b>jnu</b>: asdfasdfasdf
+                <b>asdfasdfas</b>: asdf
+                <b>asdfasdfas</b>: asdfasdfasdf
+                <b>ceci</b>: asdfasdfasdf
+    </div> -->
+    <!-- <button class="waves-effect waves-light btn teal lighten-1" ng-click="join()" ng-show="!pug.matchStatus && !inLobby">Join lobby</button>
+                                                        <button class="waves-effect waves-light btn teal lighten-1" ng-click="ready()" ng-disabled="!readyButtonEnabled" ng-show="!pug.matchStatus && inLobby">Ready up</button>
+    <button class="waves-effect waves-light btn teal lighten-1" ng-click="connect()" ng-disabled="!pug.matchStatus" ng-show="pug.matchStatus">Join server</button> -->
+</div>
+<div class="card-panel" ng-show>
+    <div class="row" ng-show>
+        <div class="col s12 m6">
+            <h5>Match Status {{pug.matchStatus}}</h5>
+            <span ng-show="pug.matchStatus">LIVE</span>
+            <span ng-show="!pug.matchStatus">NOT LIVE</span>
+        </div>
+        <div class="col s12 m6">
+            <h5>Server Status</h5>
+            <span class="green-text text-accent-3" ng-show="pug.serverStatus">ONLINE</span>
+            <span class="red-text text-accent-2" ng-show="!pug.serverStatus">OFFLINE</span>
+        </div>
+    </div>
+    <div class="row" ng-show>
+        <div class="col">
+            <h5>Location</h5>
+            {{::pug.location}}
+        </div>
+    </div>
+    <div class="row" ng-show>
+        <div class="col">
+            <h5>Players ({{pug.players.length}}/{{::pug.maxPlayers}})</h5>
+            {{pug.players}}
+            <h5>Players Ready</h5>
+            {{pug.playersReady}}
+        </div>
     </div>
 </div>
