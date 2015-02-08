@@ -182,9 +182,12 @@ app.controller('adminController', function($scope, playersAndServers, apiFactory
     };
 });
 app.controller('browserController', function($scope, $location, apiFactory, serviceFactory, pugs) {
+    // init
     $scope.pugs = pugs || {};
     serviceFactory.lobbies = pugs;
+    // join browser
     serviceFactory.browserJoin();
+    // browser
     $scope.$on("$destroy", function() {
         serviceFactory.browserLeave();
         serviceFactory.unregisterObserverCallback(updatePugs);
@@ -192,8 +195,8 @@ app.controller('browserController', function($scope, $location, apiFactory, serv
     // scope functions
     $scope.join = function(pug) {
         if (!pug.serverStatus) {
-          toast(pug.name + " is temporarily offline.", 2000);
-          return;
+            toast(pug.name + " is temporarily offline.", 2000);
+            return;
         }
         $location.path("/pug/" + pug.id);
     };
@@ -208,69 +211,86 @@ app.controller('browserController', function($scope, $location, apiFactory, serv
     serviceFactory.registerObserverCallback(updatePugs);
 });
 app.controller('lobbyController', function($scope, pug, serviceFactory, profileService, apiFactory) {
+    // init
     $scope.pug = pug;
+    // $scope.teamA = [
+    //   { name: "trollmiester", image: "http://cdn.akamai.steamstatic.com/steamcommunity/public/images/avatars/f3/f3129bb4f15a3b66870a98a6f4fae68f0bf3a194_full.jpg"},
+    //   { name: "joshua", image: "http://cdn.akamai.steamstatic.com/steamcommunity/public/images/avatars/3c/3c07d38199e53e339a3a8539080356113537fd7f_full.jpg" },
+    //   { name: "jaze", image: "http://cdn.akamai.steamstatic.com/steamcommunity/public/images/avatars/48/48531bf74bba002cb23eb7ebc91876508ea00b0b_full.jpg" },
+    //   { name: "bot derp", image: "http://cdn.akamai.steamstatic.com/steamcommunity/public/images/avatars/97/97c8eef4a3eaae1b930f651435ac9a6baf7979ee_full.jpg" },
+    //   { name: "unknown", image: "http://cdn.akamai.steamstatic.com/steamcommunity/public/images/avatars/fe/fef49e7fa7e1997310d705b2a6158ff8dc1cdfeb_full.jpg" }
+    // ];
+    // $scope.teamB = [
+    //   { name: "jun", image: "http://cdn.akamai.steamstatic.com/steamcommunity/public/images/avatars/5f/5ff77d619082d52793fdca69ed63121a82184b61_full.jpg"},
+    //   { name: "cesar", image: "http://cdn.akamai.steamstatic.com/steamcommunity/public/images/avatars/68/686ea0cedd2b234698a3603b8a9c06563a542992_full.jpg" },
+    //   { name: "liqvid", image: "http://cdn.akamai.steamstatic.com/steamcommunity/public/images/avatars/9d/9d19937bb7d40cb11efd66d25bcb91d820e0ac08_full.jpg" },
+    //   { name: "steven", image: "http://cdn.akamai.steamstatic.com/steamcommunity/public/images/avatars/00/003bb53124fb654d6e1ae5320ce02cf56a7ce710_full.jpg" },
+    //   { name: "lobstar", image: "http://cdn.akamai.steamstatic.com/steamcommunity/public/images/avatars/15/15c03c1843903ec2871b1f556170bec9df1be101_full.jpg" }
+    // ];
+    // lobby join
     serviceFactory.lobbyJoin(pug.id, profileService.profile);
-    $scope.teamA = [
-      { name: "trollmiester", image: "http://cdn.akamai.steamstatic.com/steamcommunity/public/images/avatars/f3/f3129bb4f15a3b66870a98a6f4fae68f0bf3a194_full.jpg"},
-      { name: "joshua", image: "http://cdn.akamai.steamstatic.com/steamcommunity/public/images/avatars/3c/3c07d38199e53e339a3a8539080356113537fd7f_full.jpg" },
-      { name: "jaze", image: "http://cdn.akamai.steamstatic.com/steamcommunity/public/images/avatars/48/48531bf74bba002cb23eb7ebc91876508ea00b0b_full.jpg" },
-      { name: "bot derp", image: "http://cdn.akamai.steamstatic.com/steamcommunity/public/images/avatars/97/97c8eef4a3eaae1b930f651435ac9a6baf7979ee_full.jpg" },
-      { name: "unknown", image: "http://cdn.akamai.steamstatic.com/steamcommunity/public/images/avatars/fe/fef49e7fa7e1997310d705b2a6158ff8dc1cdfeb_full.jpg" }
-    ];
-    $scope.teamB = [
-      { name: "jun", image: "http://cdn.akamai.steamstatic.com/steamcommunity/public/images/avatars/5f/5ff77d619082d52793fdca69ed63121a82184b61_full.jpg"},
-      { name: "cesar", image: "http://cdn.akamai.steamstatic.com/steamcommunity/public/images/avatars/68/686ea0cedd2b234698a3603b8a9c06563a542992_full.jpg" },
-      { name: "liqvid", image: "http://cdn.akamai.steamstatic.com/steamcommunity/public/images/avatars/9d/9d19937bb7d40cb11efd66d25bcb91d820e0ac08_full.jpg" },
-      { name: "steven", image: "http://cdn.akamai.steamstatic.com/steamcommunity/public/images/avatars/00/003bb53124fb654d6e1ae5320ce02cf56a7ce710_full.jpg" },
-      { name: "lobstar", image: "http://cdn.akamai.steamstatic.com/steamcommunity/public/images/avatars/15/15c03c1843903ec2871b1f556170bec9df1be101_full.jpg" }
-    ];
+    // lobby heartbeat
     var heartbeat = setInterval(function() {
         if ($scope.pug && $scope.pug.matchStatus) return;
-        serviceFactory.lobbyHeartbeat();
-    }, 45 * 1000);
+        if (inTeam()) {
+          serviceFactory.lobbyHeartbeat();
+        }
+    }, 20 * 1000);
+    // destroy
     $scope.$on("$destroy", function() {
         serviceFactory.lobbyLeave();
         serviceFactory.unregisterObserverCallback(updateLobby);
         clearInterval(heartbeat);
     });
-    $scope.join = function() {
-        if ($scope.pug && $scope.pug.matchStatus !== null) return;
-        for (var i in $scope.pug.players) {
-            if ($scope.pug.players[i] == profileService.profile.displayName) {
-                return console.log("already joined");
-            }
-        }
-        serviceFactory.lobbyJoin(pug.id, profileService.profile);
+    // join team
+    $scope.joinTeam = function(team) {
+        if ($scope.pug && $scope.pug.matchStatus) return;
+        serviceFactory.lobbyJoinTeam(team);
     };
+    // ready up
     $scope.ready = function() {
         if ($scope.pug && $scope.pug.matchStatus !== null) return;
-        if ($scope.pug.players && $scope.pug.players.length.toString() !== $scope.pug.maxPlayers) return;
+        if ($scope.pug.numPlayers.toString() !== $scope.pug.maxPlayers) return;
         serviceFactory.lobbyReady();
     };
+    // connect
     $scope.connect = function() {
         if ($scope.pug && $scope.pug.matchStatus == null) return;
         if ($scope.pug.ip && $scope.pug.port) {
             location.href = "steam://connect/" + $scope.pug.ip + ":" + $scope.pug.port;
         }
     };
+    // watcher for lobby updates from socket
     var updateLobby = function() {
         // update pug info if joined
         if (serviceFactory.currentLobby) {
             $scope.pug = serviceFactory.currentLobby;
             // should the ready button be enabled
-            if ($scope.pug.players.length == $scope.pug.maxPlayers) {
+            if ($scope.pug.numPlayers.toString() == $scope.pug.maxPlayers) {
                 $scope.readyButtonEnabled = true;
             } else {
                 $scope.readyButtonEnabled = false;
             }
             // did we join the lobby?
-            if ($scope.pug.players.indexOf(profileService.profile.displayName) > -1) {
+            if ($scope.pug.teamA.indexOf(profileService.profile.displayName) > -1) {
+                $scope.inLobby = true;
+            } else if ($scope.pug.teamB.indexOf(profileService.profile.displayName) > -1) {
                 $scope.inLobby = true;
             } else {
                 $scope.inLobby = false;
             }
         }
         $scope.$apply();
+    };
+    // is in pug
+    var inTeam = function() {
+        if ($scope.pug.teamA.indexOf(profileService.profile.displayName) > -1) {
+          return true;
+        } else if ($scope.pug.teamB.indexOf(profileService.profile.displayName) > -1) {
+          return true;
+        }
+
+        return false;
     };
     serviceFactory.registerObserverCallback(updateLobby);
 });
@@ -280,11 +300,12 @@ app.factory('serviceFactory', function(ENV) {
     var socket = io.connect(ENV.serviceEndpoint + '/pugs', {
         reconnection: true
     });
+    // event listeners
     socket.on('connect', function() {});
     socket.on('browser update', function(pug) {
         console.log("browser updated", pug);
         if (service.lobbies[pug.id]) {
-            service.lobbies[pug.id].players = pug.players;
+            service.lobbies[pug.id].numPlayers = pug.numPlayers;
             service.lobbies[pug.id].matchStatus = pug.matchStatus;
         }
         notifyObservers();
@@ -306,37 +327,34 @@ app.factory('serviceFactory', function(ENV) {
     service.lobbies = {};
     service.currentLobby = null;
     service.lobbyJoin = function(pugId, profile) {
-        // join
         console.log("lobby join", pugId);
         socket.emit("lobby join", {
             id: pugId,
             displayName: profile.displayName
         });
     };
+    service.lobbyJoinTeam = function(team) {
+        console.log("lobby join team", team);
+        socket.emit("lobby join team", team);
+    };
     service.lobbyReady = function() {
-        // ready
         console.log("lobby ready");
         socket.emit("lobby ready");
     };
     service.lobbyHeartbeat = function() {
-        // heartbeat
         console.log("lobby heartbeat");
         socket.emit("lobby heartbeat");
     };
     service.lobbyLeave = function() {
-        // leave
         console.log("lobby leave", service.currentLobby);
         socket.emit("lobby leave");
-        // set current lobby
         service.currentLobby = null;
     };
     service.browserJoin = function() {
-        // join
         console.log("browser join");
         socket.emit("browser join");
     };
     service.browserLeave = function() {
-        // leave
         console.log("browser leave");
         socket.emit("browser leave");
     };

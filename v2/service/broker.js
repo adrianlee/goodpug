@@ -25,9 +25,15 @@ Broker.prototype.getPug = function(serverId, callback) {
                 cb(err, info);
             });
         },
-        players: function(cb) {
-            var keyPlayers = ["server", serverId, "players"].join(":");
-            client.smembers(keyPlayers, function(err, players) {
+        teamA: function (cb) {
+            var keyTeamA = ["server", serverId, "teamA"].join(":");
+            client.smembers(keyTeamA, function(err, players) {
+                cb(err, players);
+            });
+        },
+        teamB: function (cb) {
+            var keyTeamB = ["server", serverId, "teamB"].join(":");
+            client.smembers(keyTeamB, function(err, players) {
                 cb(err, players);
             });
         },
@@ -47,7 +53,9 @@ Broker.prototype.getPug = function(serverId, callback) {
         server.serverStatus = results.info[5];
         server.matchStatus = results.info[6];
         server.maxPlayers = results.info[7] || 10;
-        server.players = results.players;
+        server.teamA = results.teamA || [];
+        server.teamB = results.teamB || [];
+        server.numPlayers = (server.teamA.length + server.teamB.length);
         server.playersReady = results.playersReady;
         if (!server.id && !server.ip) {
             return callback(err, null);

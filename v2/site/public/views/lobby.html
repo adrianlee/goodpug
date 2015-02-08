@@ -23,11 +23,11 @@
             <ul class="collection with-header">
                 <li class="collection-header lobby-team-header">
                     <h5>Team A</h5>
-                    <button class="waves-effect waves-light btn teal lighten-1 lobby-join-team" ng-hide="readyButtonEnabled">join</button>
+                    <button class="waves-effect waves-light btn teal lighten-1 lobby-join-team" ng-hide="readyButtonEnabled" ng-click="joinTeam(0)">join</button>
                 </li>
-                <li class="collection-item" ng-repeat="player in teamA">
+                <li class="collection-item" ng-repeat="player in pug.teamA">
                     <img class="circle lobby-dp" ng-src="{{player.image}}" />
-                    {{player.name}}
+                    {{player}}
                 </li>
             </ul>
         </div>
@@ -35,15 +35,16 @@
             <ul class="collection with-header">
                 <li class="collection-header lobby-team-header">
                     <h5>Team B</h5>
-                    <button class="waves-effect waves-light btn teal lighten-1 lobby-join-team" ng-hide="readyButtonEnabled">join</button>
+                    <button class="waves-effect waves-light btn teal lighten-1 lobby-join-team" ng-hide="readyButtonEnabled" ng-click="joinTeam(1)">join</button>
                 </li>
-                <li class="collection-item" ng-repeat="player in teamB">
+                <li class="collection-item" ng-repeat="player in pug.teamB">
                     <img class="circle lobby-dp" ng-src="{{player.image}}" />
-                    {{player.name}}
+                    {{player}}
                 </li>
             </ul>
         </div>
     </div>
+    {{pug}}
     <!-- <h4 class="teal-text text-lighten-2">Vote for a map</h4>
             <div class="row">
                 <div class="col s12 m3 l2">
