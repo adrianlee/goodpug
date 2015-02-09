@@ -97,30 +97,55 @@ module.exports = function(server) {
         socket.on('lobby ready', function() {
             if (!socket.displayName || !socket.currentLobbyId || socket.team == undefined || socket.team == null) return;
             console.log("ready", socket.displayName, socket.currentLobbyId);
-            async.parallel([
-                function(cb) {
-                    var keyTeamA = ["server", serverId, "teamA"].join(":");
-                    var keyTeamB = ["server", serverId, "teamB"].join(":");
+            async.parallel({
+                players: function(cb) {
+                    var keyTeamA = ["server", socket.currentLobbyId, "teamA"].join(":");
+                    var keyTeamB = ["server", socket.currentLobbyId, "teamB"].join(":");
                     client.sunion(keyTeamA, keyTeamB, function(err, players) {
                         cb(err, players);
                     });
                 },
-                function(cb) {
+                playersReady: function(cb) {
                     var keyPlayersReady = ["server", socket.currentLobbyId, "ready"].join(":");
-                    client.sadd(keyPlayersReady, socket.displayName, cb)
+                    client.sadd(keyPlayersReady, socket.displayName, function(err, res) {
+                        client.smembers(keyPlayersReady, cb);
+                    });
                 },
-                function(cb) {
-                  var keyMaxPlayers = ["server", socket.currentLobbyId, "maxPlayers"].join(":");
-                  client.get(keyMaxPlayers, function(err, res) {
-                      cb(err, res || 10);
-                  });
+                maxPlayers: function(cb) {
+                    var keyMaxPlayers = ["server", socket.currentLobbyId, "maxPlayers"].join(":");
+                    client.get(keyMaxPlayers, function(err, res) {
+                        console.log("max players res", res);
+                        cb(err, res || 10);
+                    });
                 }
-            ], function(err, results) {
+            }, function(err, results) {
                 if (err) return;
-                // same length?
-                if (results[0].length == results[1].length == results[2]) {
-                    var players = result[0].concat(results[1]);
-                    
+                console.log(results);
+                // did everyone ready up?
+                console.log(results.players.length, results.playersReady.length, parseInt(results.maxPlayers, 10));
+                if (results.players.length == results.playersReady.length && results.playersReady.length.toString() == results.maxPlayers) {
+                    console.log("Verifying everyone is ready");
+                    // check if each player has ready up
+                    for (var i = 0; i < results.players.length; i++) {
+                        // return if player doesn't exist
+                        console.log(results.players[i]);
+                        console.log(results.playersReady.indexOf(results.players[i]));
+                        if (results.playersReady.indexOf(results.players[i]) == -1) {
+                            return;
+                        }
+                    }
+                    console.log("Creating match");
+                    // create match if we reach here
+                    broker.createMatch({
+                        server: socket.currentLobbyId,
+                        players: results.players
+                    }, function(err, match) {
+                        console.log("Match created", match._id);
+                        var keyMatchStatus = ["server", socket.currentLobbyId, "matchStatus"].join(":");
+                        client.set(keyMatchStatus, match._id, function(err, res) {
+                            updateLobbyAndBrowser();
+                        });
+                    });
                 }
             });
             // console.log("ready", socket.displayName, socket.currentLobbyId);
