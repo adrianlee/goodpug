@@ -100,20 +100,28 @@ module.exports = function(server) {
             async.parallel([
                 function(cb) {
                     var keyTeamA = ["server", serverId, "teamA"].join(":");
-                    client.smembers(keyTeamA, function(err, players) {
+                    var keyTeamB = ["server", serverId, "teamB"].join(":");
+                    client.sunion(keyTeamA, keyTeamB, function(err, players) {
                         cb(err, players);
                     });
                 },
                 function(cb) {
-                    var keyTeamB = ["server", serverId, "teamB"].join(":");
-                    client.smembers(keyTeamB, function(err, players) {
-                        cb(err, players);
-                    });
+                    var keyPlayersReady = ["server", socket.currentLobbyId, "ready"].join(":");
+                    client.sadd(keyPlayersReady, socket.displayName, cb)
+                },
+                function(cb) {
+                  var keyMaxPlayers = ["server", socket.currentLobbyId, "maxPlayers"].join(":");
+                  client.get(keyMaxPlayers, function(err, res) {
+                      cb(err, res || 10);
+                  });
                 }
             ], function(err, results) {
                 if (err) return;
-
-                var length = results[0].length + results[1].length;
+                // same length?
+                if (results[0].length == results[1].length == results[2]) {
+                    var players = result[0].concat(results[1]);
+                    
+                }
             });
             // console.log("ready", socket.displayName, socket.currentLobbyId);
             // var keyPlayers = ["server", socket.currentLobbyId, "players"].join(":");
