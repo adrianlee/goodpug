@@ -1,3 +1,5 @@
+// srcds
+var srcds = require('srcds-info');
 // redis
 var redis = require('redis');
 var r = redis.createClient(6379, 'bojap.com', {
@@ -5,8 +7,6 @@ var r = redis.createClient(6379, 'bojap.com', {
 });
 // config
 var debug = false;
-// srcds
-var srcds = require('srcds-info');
 
 function pingServer(serverId) {
     r.mget([
@@ -18,8 +18,17 @@ function pingServer(serverId) {
                 if (debug) console.error(err);
             } else {
                 if (debug) console.log(res[0], res[1], "has a heartbeat");
+                // set server status
                 var keyServerStatus = ["server", serverId, "serverStatus"].join(":");
-                r.set(keyServerStatus, 1, redisResponse);
+                var valueServerStatus = 1;
+                // set current players
+                var keyCurrentNumPlayers = ["server", serverId, "currentNumPlayers"].join(":");
+                var valueCurrentNumPlayers = info.numPlayers;
+                // set current map
+                var keyCurrentMap = ["server", serverId, "currentMap"].join(":");
+                var valueCurrentMap = info.map;
+                // redis mset
+                r.mset(keyServerStatus, valueServerStatus, keyCurrentNumPlayers, valueCurrentNumPlayers, keyCurrentMap, valueCurrentMap, redisResponse);
                 r.expire(keyServerStatus, 30, redisResponse);
             }
             client.close();
