@@ -1,7 +1,8 @@
 <div class="section">
     <h3 class="teal-text text-lighten-1">Lobby {{::pug.name}}</h3>
 </div>
-<div class="section" ng-show="pug">
+<!-- MATCH NOT LIVE -->
+<div class="section" ng-show="pug && !pug.matchStatus">
     <div class="row" ng-show="readyButtonEnabled">
         <div class="col s12">
             <h3>MATCH FOUND</h3>
@@ -45,37 +46,19 @@
         </div>
     </div>
     {{pug}}
-    <!-- <h4 class="teal-text text-lighten-2">Vote for a map</h4>
-            <div class="row">
-                <div class="col s12 m3 l2">
-                                map
-                </div>
-    </div> -->
-    <!-- <h4 class="teal-text text-lighten-2">Chat</h4>
-        <div class="lobby-chat card-panel">
-                <b>jnu</b>: asdfasdfasdf
-                <b>jnu</b>: asdfasdfasdf
-                <b>finsd</b>: asdfasd
-                <b>ceci</b>: asdfasdfasdf
-                <b>finsd</b>: asdfasdfasd
-                <b>asdfasdfas</b>: asdfasdfasdf
-                <b>jnu</b>: asdfasdfasdf
-                <b>ceci</b>: asdfasdfasdf
-                <b>finsd</b>: asdfasdfasdfasdflasdkfj;lasdjfl;asdkfjl;asdk fjasdl;kfj;asdlfjkasdfasdfasdfasdfasdflasdk fj;lasdjfl;asdkfjl;asdkfjasdl;kfj;asdlfjkasdfasdfasdfasdfasdflasdkfj;lasdjfl;asdkfjl;asdkfjasdl;kfj;asdlfjkasdfasdfasdfasdfasdflasdkfj;lasdjfl;asdkfjl;as dkfjasdl;kfj;asdlfjkasdf
-                <b>asdfasdfas</b>: asdfasdfasdf
-                <b>ceci</b>: asdfasdfasdf
-                <b>asdfasdfas</b>: asdfasasdffasdfdfasdf
-                <b>jnu</b>: asdfasdfasdf
-                <b>asdfasdfas</b>: asdfasdfasdf
-                <b>finsd</b>: asdfasdfasdf
-                <b>jnu</b>: asdfasdfasdf
-                <b>asdfasdfas</b>: asdf
-                <b>asdfasdfas</b>: asdfasdfasdf
-                <b>ceci</b>: asdfasdfasdf
-    </div> -->
-    <!-- <button class="waves-effect waves-light btn teal lighten-1" ng-click="join()" ng-show="!pug.matchStatus && !inLobby">Join lobby</button>
-                                                        <button class="waves-effect waves-light btn teal lighten-1" ng-click="ready()" ng-disabled="!readyButtonEnabled" ng-show="!pug.matchStatus && inLobby">Ready up</button>
-    <button class="waves-effect waves-light btn teal lighten-1" ng-click="connect()" ng-disabled="!pug.matchStatus" ng-show="pug.matchStatus">Join server</button> -->
+    <!--
+            <button class="waves-effect waves-light btn teal lighten-1" ng-click="join()" ng-show="!pug.matchStatus && !inLobby">Join lobby</button>
+            <button class="waves-effect waves-light btn teal lighten-1" ng-click="ready()" ng-disabled="!readyButtonEnabled" ng-show="!pug.matchStatus && inLobby">Ready up</button>
+            <button class="waves-effect waves-light btn teal lighten-1" ng-click="connect()" ng-disabled="!pug.matchStatus" ng-show="pug.matchStatus">Join server</button>
+    -->
+</div>
+<!-- MATCH LIVE -->
+<div class="section" ng-show="pug && pug.matchStatus">
+    <div class="row">
+        <div class="col s12 m6">
+        Match {{pug.matchStatus}} is live 
+        </div>
+    </div>
 </div>
 <div class="card-panel" ng-show>
     <div class="row" ng-show>

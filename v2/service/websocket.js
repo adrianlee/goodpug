@@ -67,18 +67,32 @@ module.exports = function(server) {
                 }
                 // join if team B has empty slots
                 if (team == 1 && pug.teamB.length < pug.maxPlayers / 2) {
-                    if (pug.teamA.indexOf(socket.displayName) > -1) {
-                        var keyTeamA = ["server", socket.currentLobbyId, "teamA"].join(":");
-                        client.srem(keyTeamA, socket.displayName, redis.print);
-                    }
-                    // redis
-                    var keyTeamB = ["server", socket.currentLobbyId, "teamB"].join(":");
-                    client.sadd(keyTeamB, socket.displayName, redis.print);
-                    client.expire(keyTeamB, 30);
-                    // socket
-                    socket.team = 1;
-                    // update lobby
-                    updateLobbyAndBrowser();
+                    async.parallel([
+                        function(cb) {
+                            // are we already on another team?
+                            if (pug.teamA.indexOf(socket.displayName) > -1) {
+                                var teamA = ["server", socket.currentLobbyId, "teamA"].join(":");
+                                client.srem(teamA, socket.displayName, cb);
+                            } else {
+                                cb(null, true);
+                            }
+                        },
+                        function(cb) {
+                            // join new team
+                            var keyTeamB = ["server", socket.currentLobbyId, "teamB"].join(":");
+                            client.sadd(keyTeamB, socket.displayName, function() {
+                                // set socket
+                                socket.team = 1;
+                                // set key expire
+                                client.expire(keyTeamB, 30);
+                                cb(null, true);
+                            });
+                        }
+                    ], function(err, results) {
+                        if (err) return;
+                        // update lobby
+                        updateLobbyAndBrowser();
+                    });
                 }
             });
         });
@@ -148,40 +162,6 @@ module.exports = function(server) {
                     });
                 }
             });
-            // console.log("ready", socket.displayName, socket.currentLobbyId);
-            // var keyPlayers = ["server", socket.currentLobbyId, "players"].join(":");
-            // var keyPlayersReady = ["server", socket.currentLobbyId, "ready"].join(":");
-            // var keyMaxPlayers = ["server", socket.currentLobbyId, "maxPlayers"].join(":");
-            // // get max players
-            // client.get(keyMaxPlayers, function(err, maxPlayers) {
-            //     // add player to ready list
-            //     client.sadd(keyPlayersReady, socket.displayName, function(err, res) {
-            //         // get players length in lobby
-            //         client.smembers(keyPlayers, function(err, players) {
-            //             if (players.length == maxPlayers) {
-            //                 // diff lobby and ready players
-            //                 client.sdiff(keyPlayers, keyPlayersReady, function(err, diffPlayers) {
-            //                     if (diffPlayers && diffPlayers.length == 0) {
-            //                         // create a match
-            //                         broker.createMatch({
-            //                             server: socket.currentLobbyId,
-            //                             players: players
-            //                         }, function(err, match) {
-            //                             var keyMatchStatus = ["server", socket.currentLobbyId, "matchStatus"].join(":");
-            //                             client.set(keyMatchStatus, match._id, function(err, res) {
-            //                                 updateLobbyAndBrowser();
-            //                             });
-            //                         });
-            //                     } else {
-            //                         updateLobbyAndBrowser();
-            //                     }
-            //                 });
-            //             } else {
-            //                 updateLobbyAndBrowser();
-            //             }
-            //         });
-            //     });
-            // });
         });
         socket.on('lobby leave', function() {
             console.log(socket.displayName, "left lobby");
