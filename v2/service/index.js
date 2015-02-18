@@ -37,6 +37,15 @@ app.post('/pug', function(req, res) {
         });
     }
 });
+app.post('/match', function(req, res) {
+    if (req.body) {
+        broker.getmatch(req.body, function(err, match) {
+            if (err) return res.sendStatus(500);
+            if (!match) return res.sendStatus(404);
+            res.send(match);
+        });
+    }
+});
 app.get('/refresh', function(req, res) {
     broker.refreshPugList(function (err, list) {
       if (err) return res.send(500, err);
