@@ -155,9 +155,6 @@ Broker.prototype.createMatch = function(args, callback) {
     });
 }
 // get match
-Broker.prototype.createMatch = function(args, callback) {
-    // var match = new mongo.Match(args);
-    // match.save(function(err, doc) {
-    //     callback(err, doc);
-    // });
+Broker.prototype.getMatch = function(args, callback) {
+
 }
