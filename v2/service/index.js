@@ -1,3 +1,4 @@
+var config = require("../config");
 // API
 var express = require('express');
 var app = express();
@@ -59,7 +60,7 @@ app.get('/resetMatchStatus/:sid', function(req, res) {
       res.send(true)
     });
 });
-var server = app.listen(4000);
+var server = app.listen(config.service.port);
 // WEBSOCKET
 var ws = require("./websocket")(server);
 // BROKER

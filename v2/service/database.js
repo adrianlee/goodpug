@@ -1,7 +1,8 @@
+var config = require("../config");
 // mongoose
 var mongoose = require('mongoose');
 // var mongoURI = "mongodb://goodpug:montreal123@ds050077.mongolab.com:50077/goodpug";
-var mongoURI = "mongodb://goodpug:123123123@ds039960.mongolab.com:39960/goodpug2";
+var mongoURI = config.mongodb.uri;
 
 var db = mongoose.connection;
 

@@ -1,3 +1,4 @@
+var config = require("../config")
 var async = require('async');
 var redis = require('redis');
 var redisAdapter = require('socket.io-redis');
@@ -6,12 +7,12 @@ var broker = require('./broker');
 module.exports = function(server) {
     var io = require('socket.io').listen(server);
     // REDIS ADAPTER
-    var pub = redis.createClient(6379, 'bojap.com', {
-        auth_pass: "01895v7nh10234985y19034v85vyb01945v8"
+    var pub = redis.createClient(config.redis.port, config.redis.host, {
+        auth_pass: config.redis.pass
     });
-    var sub = redis.createClient(6379, 'bojap.com', {
+    var sub = redis.createClient(config.redis.port, config.redis.host, {
         detect_buffers: true,
-        auth_pass: "01895v7nh10234985y19034v85vyb01945v8"
+        auth_pass: config.redis.pass
     });
     io.adapter(redisAdapter({
         pubClient: pub,

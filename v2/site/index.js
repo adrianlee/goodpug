@@ -1,3 +1,4 @@
+var config = require("../config");
 var db = require('./database');
 var async = require("async");
 // express app init
@@ -16,17 +17,12 @@ app.use(logger('dev'));
 var session = require('express-session');
 var RedisStore = require('connect-redis')(session);
 app.use(session({
-    // store: new RedisStore({
-    //   host: "pub-redis-16323.us-east-1-2.4.ec2.garantiadata.com",
-    //   port: "16323",
-    //   pass: 123123123
-    // }),
     store: new RedisStore({
-        host: "bojap.com",
-        port: "6379",
-        pass: "01895v7nh10234985y19034v85vyb01945v8"
+        host: config.redis.host,
+        port: config.redis.port,
+        pass: config.redis.pass
     }),
-    secret: 'keyboard catz',
+    secret: config.express.sessionSecret,
     resave: false,
     saveUninitialized: true,
 }));
@@ -104,13 +100,6 @@ app.get('/', function(req, res) {
     }
     res.sendFile(__dirname + "/public/welcome.html");
 });
-// app.use(function(req, res) {
-//     if (req.isAuthenticated()) {
-//         var data = req.user;
-//         return res.sendFile(__dirname + "/public/home.html");
-//     }
-//     res.sendFile(__dirname + "/public/welcome.html");
-// });
 // helper functions
 function ensureAuthenticated(req, res, next) {
     if (req.isAuthenticated()) {
@@ -122,4 +111,4 @@ function ensureAuthenticated(req, res, next) {
     res.send(401);
 };
 // start
-app.listen(3000);
+app.listen(config.express.port);
