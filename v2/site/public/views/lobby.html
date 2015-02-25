@@ -1,5 +1,5 @@
 <div class="section">
-    <h3 class="teal-text text-lighten-1">Lobby {{::pug.name}}</h3>
+    <h2>Lobby {{::pug.name}}</h2>
 </div>
 <!-- MATCH NOT LIVE -->
 <div class="section" ng-show="pug && !pug.matchStatus">
@@ -18,13 +18,13 @@
             </div>
         </div>
     </div>
-    <h4 class="teal-text text-lighten-2">Choose a team</h4>
+    <h4>Choose a team</h4>
     <div class="row">
         <div class="col s12 m6">
             <ul class="collection with-header">
                 <li class="collection-header lobby-team-header">
                     <h5>Team A</h5>
-                    <button class="waves-effect waves-light btn teal lighten-1 lobby-join-team" ng-hide="readyButtonEnabled" ng-click="joinTeam(0)">join</button>
+                    <button class="waves-effect waves-light btn blue-grey lobby-join-team" ng-hide="readyButtonEnabled" ng-click="joinTeam(0)">join</button>
                 </li>
                 <li class="collection-item" ng-repeat="player in pug.teamA">
                     <img class="circle lobby-dp" ng-src="{{player.image}}" />
@@ -36,7 +36,7 @@
             <ul class="collection with-header">
                 <li class="collection-header lobby-team-header">
                     <h5>Team B</h5>
-                    <button class="waves-effect waves-light btn teal lighten-1 lobby-join-team" ng-hide="readyButtonEnabled" ng-click="joinTeam(1)">join</button>
+                    <button class="waves-effect waves-light btn blue-grey lobby-join-team" ng-hide="readyButtonEnabled" ng-click="joinTeam(1)">join</button>
                 </li>
                 <li class="collection-item" ng-repeat="player in pug.teamB">
                     <img class="circle lobby-dp" ng-src="{{player.image}}" />

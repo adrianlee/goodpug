@@ -67,12 +67,13 @@
             </div>
             <header>
                 <!-- SIDEBAR -->
-                <ul id="slide-out" class="side-nav fixed" ng-controller="navController">
-                    <li class="logo">
+                <ul id="slide-out" class="side-nav fixed blue-grey darken-2" ng-controller="navController">
+                    <li class="logo blue-grey darken-3 hidden">
                         <a href="#/">
                         <img src="/logo.png" title="Icon by Heather Dunmoyer. This icon is licensed as Creative Commons – Attribution (CC BY 3.0) http://thenounproject.com/term/pug/83742/"/>
                         </a>
                     </li>
+                    <li class="nav-header blue-grey darken-3"><a href="#/">GoodPug</a></li>
                     <li><a href="#/pugs" class="findapug"><span>Find a PUG</span></a></li>
                     <li><a href="#/profile/{{profileId}}">Profile</a></li>
                     <li><a href="#/admin" ng-show="isAdmin">Control Panel</a></li>

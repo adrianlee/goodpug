@@ -20,10 +20,21 @@ header, main, footer {
     }
 }
 a {
-    color: #26a69a;
+    color: #ec407a;
 }
 .welcome {
-  padding: 20px 50px;
+    /*padding: 50px;
+    max-width: 600px;
+    margin: 0 auto;*/
+    position: absolute;
+    top: 25%;
+    left: 25%;
+}
+@media only screen and (max-width: 800px) {
+    .welcome {
+        top: 10%;
+        left: 10%;
+    }
 }
 .block {
     position: absolute;
@@ -34,22 +45,36 @@ a {
     background-color: #fff;
     z-index: 1000;
 }
+.hidden {
+  display: none;
+}
+
+/* PUG BROWSER */
+
 .pug-table > tbody > tr {
     cursor: pointer;
 }
 .pug-table > tbody > tr:hover {
     background-color: #ededed !important;
 }
-.logo {
-    height: 100px;
-    text-align: center;
-    border-bottom: 1px solid #ededed;
+
+/* NAVIGATION */
+.nav-header {
+    font-size: 2em;
+    font-weight: 600;
+    color: #fff;
+    border-bottom: 2px solid #263238;
 }
-.logo:hover {
-    background-color: #ffffff !important;
+.side-nav.fixed li {
+    padding-left: 30px;
 }
-.logo img {
-    padding: 20px 0;
+.side-nav.fixed li a {
+    font-weight: 500;
+    color: #fff;
+    padding: 15px 0px;
+}
+.side-nav.fixed li:hover {
+    background: #78909c;
 }
 .findapug:hover span {
     display: none;
@@ -57,36 +82,53 @@ a {
 .findapug:hover:before {
     content: "Find a Pick Up Game";
 }
-.material-tooltip {}
-
-
 .collapsible-body {
-  padding: 20px;
+    padding: 20px;
 }
 
+
+/* LOGO */
+
+.logo {
+    text-align: center;
+    border-bottom: 2px solid #263238;
+    padding: 0;
+    margin: 0;
+}
+
+/* LOBBY */
+
 .lobby-dp {
-  width: 1.5rem;
-  height: 1.5rem;
-  margin-right: 15px;
+    width: 1.5rem;
+    height: 1.5rem;
+    margin-right: 15px;
 }
 
 .lobby-team-header {
-  position: relative;
+    position: relative;
 }
 
 .lobby-join-team {
-  position: absolute;
-  right: 15px;
-  top: 15px;
+    position: absolute;
+    right: 15px;
+    top: 15px;
 }
 
 .lobby-chat {
-  padding: 0;
-  height: 200px;
-  overflow-y: scroll;
-  white-space: pre-wrap;      /* CSS3 */   
-  white-space: -moz-pre-wrap; /* Firefox */    
-  white-space: -pre-wrap;     /* Opera <7 */   
-  white-space: -o-pre-wrap;   /* Opera 7 */    
-  word-wrap: break-word;      /* IE */
+    padding: 0;
+    height: 200px;
+    overflow-y: scroll;
+    white-space: pre-wrap;      /* CSS3 */   
+    white-space: -moz-pre-wrap; /* Firefox */    
+    white-space: -pre-wrap;     /* Opera <7 */   
+    white-space: -o-pre-wrap;   /* Opera 7 */    
+    word-wrap: break-word;      /* IE */
+}
+
+/* CONTAINER */
+
+@media only screen and (min-width : 993px) {
+    .container {
+        width: 85%;
+    }
 }

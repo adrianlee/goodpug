@@ -1,7 +1,7 @@
 <div class="section">
-    <h2 class="teal-text text-lighten-1">Control Panel</h2>
+    <h2>Control Panel</h2>
 </div>
-<div>
+<div class="z-depth-2">
     <ul class="collapsible" data-collapsible="accordion" style="background: #fff">
         <li>
             <div class="collapsible-header"><i class="mdi-av-playlist-add"></i>Add a server</div>
@@ -13,7 +13,7 @@
                             <label for="name">name</label>
                         </div>
                         <div class="input-field col s12 m6">
-                            <select id="location" ng-model="newPug.location" required>
+                            <select id="location" class="browser-default" ng-model="newPug.location" required>
                                 <option value="" disabled selected>Choose a location</option>
                                 <option value="uswest">US WEST</option>
                                 <option value="uscentral">US CENTRAL</option>
@@ -38,7 +38,7 @@
                             <label for="rcon">rcon</label>
                         </div>
                     </div>
-                    <input type="submit" class="waves-effect waves-light btn teal lighten-1"></input>
+                    <input type="submit" class="waves-effect waves-light btn blue-grey"></input>
                 </form>
             </div>
         </li>
@@ -66,13 +66,13 @@
                                 <td>{{server.port}}</td>
                                 <td>{{server.rcon}}</td>
                                 <td>{{server.maxPlayers}}</td>
-                                <td><button class="waves-effect waves-light btn teal lighten-1" ng-click="resetMatchStatus(server)">Reset match</button></td>
+                                <td><button class="waves-effect waves-light btn blue-grey" ng-click="resetMatchStatus(server)">Reset match</button></td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
                 <div class="section">
-                    <a class="waves-effect waves-light btn teal lighten-1" ng-click="refresh()">Force pug info refresh on redis</a>
+                    <a class="waves-effect waves-light btn blue-grey" ng-click="refresh()">Force pug info refresh on redis</a>
                 </div>
             </div>
         </li>
