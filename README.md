@@ -13,3 +13,13 @@ nodemon
 ``` http
 http://localhost:3000
 ```
+
+## services
+- site
+  - angular
+- service
+  - api
+  - socket
+- servermanager
+  - log listener
+  - server health probe
