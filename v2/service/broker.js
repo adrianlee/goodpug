@@ -153,8 +153,16 @@ Broker.prototype.createMatch = function(args, callback) {
     match.save(function(err, doc) {
         callback(err, doc);
     });
-}
+};
+// get match list
+Broker.prototype.getMatchList = function(callback) {
+    mongo.Match.find({}, function (err, doc) {
+        callback(err, doc);
+    });
+};
 // get match
-Broker.prototype.getMatch = function(args, callback) {
-
-}
+Broker.prototype.getMatch = function(id, callback) {
+    mongo.Match.findOne({ _id: id }, function (err, matches) {
+        callback(err, matches);
+    });
+};

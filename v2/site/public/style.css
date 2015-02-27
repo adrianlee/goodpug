@@ -1,5 +1,5 @@
 html {
-    font-family: 'Lato', sans-serif;
+    font-family: 'Open Sans', sans-serif;
 }
 body {
     /*background: url("http://i.imgur.com/ymihu2g.jpg") no-repeat center center fixed;*/
@@ -59,6 +59,7 @@ a {
 }
 
 /* NAVIGATION */
+
 .nav-header {
     font-size: 2em;
     font-weight: 600;
@@ -69,7 +70,7 @@ a {
     padding-left: 30px;
 }
 .side-nav.fixed li a {
-    font-weight: 500;
+    font-weight: 600;
     color: #fff;
     padding: 15px 0px;
 }

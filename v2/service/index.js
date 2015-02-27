@@ -15,6 +15,7 @@ app.all('*', function(req, res, next) {
     res.header('Access-Control-Allow-Headers', 'Content-Type');
     next();
 });
+// pugs
 app.get('/pugs', function(req, res) {
     broker.getPugs(function(err, pug) {
         if (err) return res.sendStatus(500);
@@ -38,15 +39,22 @@ app.post('/pug', function(req, res) {
         });
     }
 });
-app.post('/match', function(req, res) {
-    if (req.body) {
-        broker.getmatch(req.body, function(err, match) {
-            if (err) return res.sendStatus(500);
-            if (!match) return res.sendStatus(404);
-            res.send(match);
-        });
-    }
+// matches
+app.get('/match', function(req, res) {
+    broker.getMatchList(function (err, list) {
+        if (err) return res.sendStatus(500);
+        if (!list) return res.sendStatus(404);
+        res.send(list);
+    });
 });
+app.get('/match/:id', function(req, res) {
+    broker.getMatch(req.params.id, function (err, match) {
+        if (err) return res.sendStatus(500);
+        if (!match) return res.sendStatus(404);
+        res.send(match);
+    });
+});
+// server command
 app.get('/refresh', function(req, res) {
     broker.refreshPugList(function (err, list) {
       if (err) return res.send(500, err);

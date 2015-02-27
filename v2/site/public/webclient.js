@@ -233,7 +233,7 @@ app.controller('lobbyController', function($scope, pug, serviceFactory, profileS
     var heartbeat = setInterval(function() {
         if ($scope.pug && $scope.pug.matchStatus) return;
         if (inTeam()) {
-          serviceFactory.lobbyHeartbeat();
+            serviceFactory.lobbyHeartbeat();
         }
     }, 20 * 1000);
     // destroy
@@ -285,9 +285,9 @@ app.controller('lobbyController', function($scope, pug, serviceFactory, profileS
     // is in pug
     var inTeam = function() {
         if ($scope.pug.teamA.indexOf(profileService.profile.displayName) > -1) {
-          return true;
+            return true;
         } else if ($scope.pug.teamB.indexOf(profileService.profile.displayName) > -1) {
-          return true;
+            return true;
         }
 
         return false;
@@ -393,6 +393,12 @@ app.factory('apiFactory', function($http, ENV) {
     profile.resetMatchStatus = function(sid) {
         return $http.get(ENV.serviceEndpoint + '/resetMatchStatus/' + sid);
     };
+    profile.getMatch = function(id) {
+        return $http.get(ENV.serviceEndpoint + '/match/' + id);
+    }
+    profile.getMatches = function() {
+        return $http.get(ENV.serviceEndpoint + '/match');
+    }
     return profile;
 });
 // services
