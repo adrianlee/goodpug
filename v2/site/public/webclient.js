@@ -213,20 +213,6 @@ app.controller('browserController', function($scope, $location, apiFactory, serv
 app.controller('lobbyController', function($scope, pug, serviceFactory, profileService, apiFactory) {
     // init
     $scope.pug = pug;
-    // $scope.teamA = [
-    //   { name: "trollmiester", image: "http://cdn.akamai.steamstatic.com/steamcommunity/public/images/avatars/f3/f3129bb4f15a3b66870a98a6f4fae68f0bf3a194_full.jpg"},
-    //   { name: "joshua", image: "http://cdn.akamai.steamstatic.com/steamcommunity/public/images/avatars/3c/3c07d38199e53e339a3a8539080356113537fd7f_full.jpg" },
-    //   { name: "jaze", image: "http://cdn.akamai.steamstatic.com/steamcommunity/public/images/avatars/48/48531bf74bba002cb23eb7ebc91876508ea00b0b_full.jpg" },
-    //   { name: "bot derp", image: "http://cdn.akamai.steamstatic.com/steamcommunity/public/images/avatars/97/97c8eef4a3eaae1b930f651435ac9a6baf7979ee_full.jpg" },
-    //   { name: "unknown", image: "http://cdn.akamai.steamstatic.com/steamcommunity/public/images/avatars/fe/fef49e7fa7e1997310d705b2a6158ff8dc1cdfeb_full.jpg" }
-    // ];
-    // $scope.teamB = [
-    //   { name: "jun", image: "http://cdn.akamai.steamstatic.com/steamcommunity/public/images/avatars/5f/5ff77d619082d52793fdca69ed63121a82184b61_full.jpg"},
-    //   { name: "cesar", image: "http://cdn.akamai.steamstatic.com/steamcommunity/public/images/avatars/68/686ea0cedd2b234698a3603b8a9c06563a542992_full.jpg" },
-    //   { name: "liqvid", image: "http://cdn.akamai.steamstatic.com/steamcommunity/public/images/avatars/9d/9d19937bb7d40cb11efd66d25bcb91d820e0ac08_full.jpg" },
-    //   { name: "steven", image: "http://cdn.akamai.steamstatic.com/steamcommunity/public/images/avatars/00/003bb53124fb654d6e1ae5320ce02cf56a7ce710_full.jpg" },
-    //   { name: "lobstar", image: "http://cdn.akamai.steamstatic.com/steamcommunity/public/images/avatars/15/15c03c1843903ec2871b1f556170bec9df1be101_full.jpg" }
-    // ];
     // lobby join
     serviceFactory.lobbyJoin(pug.id, profileService.profile);
     // lobby heartbeat
@@ -260,6 +246,16 @@ app.controller('lobbyController', function($scope, pug, serviceFactory, profileS
             location.href = "steam://connect/" + $scope.pug.ip + ":" + $scope.pug.port;
         }
     };
+    // Helper functions
+    var inTeam = function() {
+        if ($scope.pug.teamA.indexOf(profileService.profile.displayName) > -1) {
+            return true;
+        } else if ($scope.pug.teamB.indexOf(profileService.profile.displayName) > -1) {
+            return true;
+        }
+
+        return false;
+    };
     // watcher for lobby updates from socket
     var updateLobby = function() {
         // update pug info if joined
@@ -281,16 +277,6 @@ app.controller('lobbyController', function($scope, pug, serviceFactory, profileS
             }
         }
         $scope.$apply();
-    };
-    // is in pug
-    var inTeam = function() {
-        if ($scope.pug.teamA.indexOf(profileService.profile.displayName) > -1) {
-            return true;
-        } else if ($scope.pug.teamB.indexOf(profileService.profile.displayName) > -1) {
-            return true;
-        }
-
-        return false;
     };
     serviceFactory.registerObserverCallback(updateLobby);
 });

@@ -180,6 +180,7 @@ module.exports = function(server) {
             console.log(socket.displayName, "disconnect");
             leaveLobby(socket);
         });
+        
         // helper functions
         function updateLobbyAndBrowser(callback) {
             if (!socket.currentLobbyId) return;
@@ -224,7 +225,7 @@ module.exports = function(server) {
                 });
             };
             leaveTeam(socket, notifyLobby);
-        }
+        };
 
         function leaveTeam(socket, callback) {
             if (!socket.displayName || !socket.currentLobbyId || socket.team == null || socket.team == undefined) return;
@@ -236,6 +237,6 @@ module.exports = function(server) {
                     callback();
                 }
             });
-        }
+        };
     });
 }
