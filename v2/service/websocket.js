@@ -158,6 +158,7 @@ module.exports = function(server) {
                         console.log("Match created", match._id);
                         var keyMatchStatus = ["server", socket.currentLobbyId, "matchStatus"].join(":");
                         client.set(keyMatchStatus, match._id, function(err, res) {
+                            clearTeams(socket);
                             updateLobbyAndBrowser();
                         });
                     });
@@ -212,6 +213,12 @@ module.exports = function(server) {
                 var key = ["server", socket.currentLobbyId, "ready"].join(":");
                 client.del(key, redis.print);
             }
+        };
+
+        function clearTeams(socket) {
+            var teamA = ["server", socket.currentLobbyId, "teamA"].join(":");
+            var teamB = ["server", socket.currentLobbyId, "teamB"].join(":");
+            client.del(teamA, teamB, redis.print);
         };
 
         function leaveLobby(socket) {
