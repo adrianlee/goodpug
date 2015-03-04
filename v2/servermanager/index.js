@@ -1,7 +1,8 @@
+var config = require("../config");
 // redis
 var redis = require('redis');
-var r = redis.createClient(6379, 'bojap.com', {
-    auth_pass: "01895v7nh10234985y19034v85vyb01945v8"
+var r = redis.createClient(config.redis.port, config.redis.host, {
+    auth_pass: config.redis.pass
 });
 // log reader
 var dgram = require('dgram')
