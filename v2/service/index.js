@@ -16,42 +16,57 @@ app.all('*', function(req, res, next) {
     next();
 });
 // pugs
-app.get('/pugs', function(req, res) {
-    broker.getPugs(function(err, pug) {
+app.get('/servers', function(req, res) {
+    broker.getPugs(function(err, servers) {
         if (err) return res.sendStatus(500);
-        if (!pug) return res.sendStatus(404);
-        res.send(pug);
+        if (!servers) return res.sendStatus(404);
+        res.send(servers);
     });
 });
-app.get('/pug/:id', function(req, res) {
-    broker.getPug(req.params.id, function(err, pug) {
-        if (err) return res.sendStatus(500);
-        if (!pug) return res.sendStatus(404);
-        res.send(pug);
-    });
-});
-app.post('/pug', function(req, res) {
+app.post('/servers', function(req, res) {
     if (req.body) {
-        broker.createPug(req.body, function(err, pug) {
+        broker.createPug(req.body, function(err, server) {
             if (err) return res.sendStatus(500);
-            if (!pug) return res.sendStatus(404);
-            res.send(pug);
+            if (!server) return res.sendStatus(404);
+            res.send(server);
         });
     }
 });
-// matches
-app.get('/match', function(req, res) {
-    broker.getMatchList(function (err, list) {
+app.get('/servers/:id', function(req, res) {
+    broker.getPug(req.params.id, function(err, server) {
         if (err) return res.sendStatus(500);
-        if (!list) return res.sendStatus(404);
-        res.send(list);
+        if (!server) return res.sendStatus(404);
+        res.send(server);
     });
 });
-app.get('/match/:id', function(req, res) {
+// matches
+app.get('/matches', function(req, res) {
+    broker.getMatchList(function (err, matches) {
+        if (err) return res.sendStatus(500);
+        if (!matches) return res.sendStatus(404);
+        res.send(matches);
+    });
+});
+app.get('/matches/:id', function(req, res) {
     broker.getMatch(req.params.id, function (err, match) {
         if (err) return res.sendStatus(500);
         if (!match) return res.sendStatus(404);
         res.send(match);
+    });
+});
+// players
+app.get('/players', function(req, res) {
+    broker.getPlayers(function (err, players) {
+        if (err) return res.sendStatus(500);
+        if (!players) return res.sendStatus(404);
+        res.send(players);
+    });
+});
+app.get('/players/:id', function(req, res) {
+    broker.getPlayer(req.params.id, function (err, player) {
+        if (err) return res.sendStatus(500);
+        if (!player) return res.sendStatus(404);
+        res.send(player);
     });
 });
 // server command

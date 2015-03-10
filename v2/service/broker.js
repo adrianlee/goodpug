@@ -154,7 +154,7 @@ Broker.prototype.createMatch = function(args, callback) {
         callback(err, doc);
     });
 };
-// get match list
+// get list of matches
 Broker.prototype.getMatchList = function(callback) {
     mongo.Match.find({}, function (err, doc) {
         callback(err, doc);
@@ -164,5 +164,17 @@ Broker.prototype.getMatchList = function(callback) {
 Broker.prototype.getMatch = function(id, callback) {
     mongo.Match.findOne({ _id: id }, function (err, matches) {
         callback(err, matches);
+    });
+};
+// get list of players
+Broker.prototype.getPlayers = function(callback) {
+    mongo.Match.find({}, function (err, doc) {
+        callback(err, doc);
+    });
+};
+// get player
+Broker.prototype.getPlayer = function(id, callback) {
+    mongo.Match.findOne({ _id: id }, function (err, doc) {
+        callback(err, doc);
     });
 };

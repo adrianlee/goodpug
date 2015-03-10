@@ -102,6 +102,20 @@ app.config(function($routeProvider, $locationProvider, $httpProvider) {
                 return delay.promise;
             }
         }
+    }).when('/history', {
+        templateUrl: '/views/match_history.html',
+        controller: 'matchHistoryController',
+        resolve: {
+            profile: function($q, apiFactory) {
+                var delay = $q.defer();
+                apiFactory.getProfile().success(function(profile) {
+                    delay.resolve(profile);
+                }).error(function(err, status) {
+                    delay.reject(status);
+                });
+                return delay.promise;
+            }
+        }
     }).otherwise({
         redirectTo: '/'
     });
@@ -280,6 +294,9 @@ app.controller('lobbyController', function($scope, pug, serviceFactory, profileS
     };
     serviceFactory.registerObserverCallback(updateLobby);
 });
+app.controller('matchHistoryController', function($scope, history) {
+
+});
 // factories
 app.factory('serviceFactory', function(ENV) {
     // socket
@@ -365,13 +382,13 @@ app.factory('apiFactory', function($http, ENV) {
         return $http.get('/admin');
     };
     profile.getPugs = function() {
-        return $http.get(ENV.serviceEndpoint + '/pugs');
-    };
-    profile.getPug = function(id) {
-        return $http.get(ENV.serviceEndpoint + '/pug/' + id);
+        return $http.get(ENV.serviceEndpoint + '/servers');
     };
     profile.createPug = function(pug) {
-        return $http.post(ENV.serviceEndpoint + '/pug', pug);
+        return $http.post(ENV.serviceEndpoint + '/servers', pug);
+    };
+    profile.getPug = function(id) {
+        return $http.get(ENV.serviceEndpoint + '/servers/' + id);
     };
     profile.refresh = function() {
         return $http.get(ENV.serviceEndpoint + '/refresh');
@@ -379,11 +396,11 @@ app.factory('apiFactory', function($http, ENV) {
     profile.resetMatchStatus = function(sid) {
         return $http.get(ENV.serviceEndpoint + '/resetMatchStatus/' + sid);
     };
-    profile.getMatch = function(id) {
-        return $http.get(ENV.serviceEndpoint + '/match/' + id);
-    }
     profile.getMatches = function() {
-        return $http.get(ENV.serviceEndpoint + '/match');
+        return $http.get(ENV.serviceEndpoint + '/matches');
+    }
+    profile.getMatch = function(id) {
+        return $http.get(ENV.serviceEndpoint + '/matches/' + id);
     }
     return profile;
 });
