@@ -11,7 +11,7 @@ config.mongodb = {
 }
 
 config.redis = {
-	host: "bojap.com",
+	host: "162.243.149.110",
 	port: "6379",
 	pass: "01895v7nh10234985y19034v85vyb01945v8"
 }

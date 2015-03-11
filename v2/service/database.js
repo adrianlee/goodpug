@@ -46,10 +46,10 @@ var Player = mongoose.model('Player', {
 });
 
 var Server = mongoose.model('Server', {
-  name: String,
-  ip: String,
-  port: String,
-  rcon: String,
+  name: { type: String, required: true },
+  ip: { type: String, required: true },
+  port: { type: String, required: true },
+  rcon: { type: String, required: true },
   location: { type: String, enum: ["uswest", "useast", "uscentral"] },
   updated: { type: Date, default: Date.now },
   maxPlayers: { type: Number, default: 10 }

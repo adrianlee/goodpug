@@ -6,7 +6,7 @@ var mongo = require('./database');
 function Broker() {};
 Broker.prototype.init = function() {};
 // get pug from redis
-Broker.prototype.getPug = function(serverId, callback) {
+Broker.prototype.getServerById = function(serverId, callback) {
     if (!serverId) {
         return;
     }
@@ -97,7 +97,7 @@ Broker.prototype.getPugs = function(callback) {
             });
         },
         function(servers, cb) {
-            async.map(servers, self.getPug, function(err, results) {
+            async.map(servers, self.getServerById, function(err, results) {
                 cb(err, results);
             });
         }
@@ -116,6 +116,9 @@ Broker.prototype.createPug = function(pug, callback) {
         self.refreshPugList();
         callback(err, doc);
     });
+};
+Broker.prototype.removePug = function (id, callback) {
+    mongo.Server.findByIdAndRemove(id, callback);
 };
 // get a list of server from mongo and update list on redis
 Broker.prototype.refreshPugList = function(callback) {

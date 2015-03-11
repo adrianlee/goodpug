@@ -111,4 +111,6 @@ function ensureAuthenticated(req, res, next) {
     res.send(401);
 };
 // start
-app.listen(config.express.port);
+var server = app.listen(config.express.port);
+// WEBSOCKET
+var ws = require("./websocket")(server);

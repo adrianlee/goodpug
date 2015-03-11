@@ -7,7 +7,7 @@ app.config(function($routeProvider, $locationProvider, $httpProvider) {
         resolve: {
             pugs: function($q, apiFactory) {
                 var delay = $q.defer();
-                apiFactory.getPugs().success(function(data) {
+                apiFactory.getServers().success(function(data) {
                     var pugs = {};
                     for (var i = 0; i < data.length; i++) {
                         pugs[data[i].id] = data[i];
@@ -48,7 +48,7 @@ app.config(function($routeProvider, $locationProvider, $httpProvider) {
         resolve: {
             pugs: function($q, apiFactory) {
                 var delay = $q.defer();
-                apiFactory.getPugs().success(function(data) {
+                apiFactory.getServers().success(function(data) {
                     var pugs = {};
                     for (var i = 0; i < data.length; i++) {
                         pugs[data[i].id] = data[i];
@@ -66,7 +66,7 @@ app.config(function($routeProvider, $locationProvider, $httpProvider) {
         resolve: {
             pug: function($q, $route, apiFactory) {
                 var delay = $q.defer();
-                apiFactory.getPug($route.current.params && $route.current.params.id).success(function(pug) {
+                apiFactory.getServer($route.current.params && $route.current.params.id).success(function(pug) {
                     delay.resolve(pug);
                 }).error(function(err, status) {
                     delay.reject(err);
@@ -108,7 +108,7 @@ app.config(function($routeProvider, $locationProvider, $httpProvider) {
         resolve: {
             profile: function($q, apiFactory) {
                 var delay = $q.defer();
-                apiFactory.getProfile().success(function(profile) {
+                apiFactory.getHistory().success(function(profile) {
                     delay.resolve(profile);
                 }).error(function(err, status) {
                     delay.reject(status);
@@ -192,6 +192,15 @@ app.controller('adminController', function($scope, playersAndServers, apiFactory
             toast(server.name + " - reset match - OK", 2000);
         }).error(function(err, status) {
             toast(server.name + " - reset match - Error", 2000);
+        });
+    };
+    $scope.removeServer = function(server) {
+        if (!server) return;
+        console.log(server);
+        apiFactory.removeServer(server._id).success(function() {
+            toast(server.name + " - remove server - OK", 2000);
+        }).error(function(err, status) {
+            toast(server.name + " - remove server - Error", 2000);
         });
     };
 });
@@ -300,7 +309,7 @@ app.controller('matchHistoryController', function($scope, history) {
 // factories
 app.factory('serviceFactory', function(ENV) {
     // socket
-    var socket = io.connect(ENV.serviceEndpoint + '/pugs', {
+    var socket = io.connect(ENV.siteEndpoint + '/pugs', {
         reconnection: true
     });
     // event listeners
@@ -381,15 +390,18 @@ app.factory('apiFactory', function($http, ENV) {
     profile.getPlayersAndServers = function() {
         return $http.get('/admin');
     };
-    profile.getPugs = function() {
+    profile.getServers = function() {
         return $http.get(ENV.serviceEndpoint + '/servers');
     };
     profile.createPug = function(pug) {
         return $http.post(ENV.serviceEndpoint + '/servers', pug);
     };
-    profile.getPug = function(id) {
+    profile.getServer = function(id) {
         return $http.get(ENV.serviceEndpoint + '/servers/' + id);
     };
+    profile.removeServer = function(id) {
+        return $http.delete(ENV.serviceEndpoint + '/servers/' + id);
+    }
     profile.refresh = function() {
         return $http.get(ENV.serviceEndpoint + '/refresh');
     };
@@ -401,6 +413,9 @@ app.factory('apiFactory', function($http, ENV) {
     }
     profile.getMatch = function(id) {
         return $http.get(ENV.serviceEndpoint + '/matches/' + id);
+    }
+    profile.getHistory = function(id) {
+        return $http.get(ENV.serviceEndpoint + '/players/' + id + '/matches');
     }
     return profile;
 });
