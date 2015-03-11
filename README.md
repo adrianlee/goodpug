@@ -17,9 +17,11 @@ http://localhost:3000
 ## services
 - site
   - angular
+  - socket
 - service
   - api
-  - socket
 - servermanager
   - log listener
-  - server health probe
+- server health probe
+- redis
+- mongodb
