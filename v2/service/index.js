@@ -90,8 +90,6 @@ app.get('/resetMatchStatus/:sid', function(req, res) {
     });
 });
 var server = app.listen(config.service.port);
-// WEBSOCKET
-// var ws = require("./websocket")(server);
 // BROKER
 var broker = require('./broker');
 broker.init();

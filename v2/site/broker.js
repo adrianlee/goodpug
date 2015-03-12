@@ -63,6 +63,27 @@ Broker.prototype.getServerById = function(serverId, callback) {
         callback(err, server);
     });
 };
+// list pugs from redis
+Broker.prototype.getPugs = function(callback) {
+    var self = this;
+    // get server list from redis, getPug on each server
+    async.waterfall([
+        function(cb) {
+            client.smembers("server:list", function(err, servers) {
+                cb(err, servers);
+            });
+        },
+        function(servers, cb) {
+            async.map(servers, self.getServerById, function(err, results) {
+                cb(err, results);
+            });
+        }
+    ], function(err, results) {
+        callback(err, results.filter(function(n) {
+            return !!n;
+        }));
+    });
+};
 // set pug in redis
 Broker.prototype.setPug = function(server, callback) {
     var keyId = ["server", server._id, "id"].join(":");
@@ -85,27 +106,6 @@ Broker.prototype.setPug = function(server, callback) {
     if (callback) {
         callback(null, server._id);
     }
-};
-// list pugs from redis
-Broker.prototype.getPugs = function(callback) {
-    var self = this;
-    // get server list from redis, getPug on each server
-    async.waterfall([
-        function(cb) {
-            client.smembers("server:list", function(err, servers) {
-                cb(err, servers);
-            });
-        },
-        function(servers, cb) {
-            async.map(servers, self.getServerById, function(err, results) {
-                cb(err, results);
-            });
-        }
-    ], function(err, results) {
-        callback(err, results.filter(function(n) {
-            return !!n;
-        }));
-    });
 };
 // get a list of server from mongo and update list on redis
 Broker.prototype.refreshPugList = function(callback) {
