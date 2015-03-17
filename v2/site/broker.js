@@ -74,59 +74,15 @@ Broker.prototype.getPugs = function(callback) {
             });
         },
         function(servers, cb) {
+            // get list of pugs from redis
             async.map(servers, self.getServerById, function(err, results) {
                 cb(err, results);
             });
         }
     ], function(err, results) {
+        // filter out null servers
         callback(err, results.filter(function(n) {
             return !!n;
         }));
-    });
-};
-// set pug in redis
-Broker.prototype.setPug = function(server, callback) {
-    var keyId = ["server", server._id, "id"].join(":");
-    var keyName = ["server", server._id, "name"].join(":");
-    var keyIp = ["server", server._id, "ip"].join(":");
-    var keyPort = ["server", server._id, "port"].join(":");
-    var keyLocation = ["server", server._id, "location"].join(":");
-    var keyMaxPlayers = ["server", server._id, "maxPlayers"].join(":");
-    var valueId = server._id;
-    var valueName = server.name;
-    var valueIp = server.ip;
-    var valuePort = server.port;
-    var valueLocation = server.location;
-    var valueMaxPlayers = server.maxPlayers;
-    if (!valueId || !valueName || !valueIp || !valuePort || !valueLocation || !valueMaxPlayers) {
-        return;
-    }
-    client.mset(keyId, valueId, keyName, valueName, keyIp, valueIp, keyPort, valuePort, keyLocation, valueLocation, keyMaxPlayers, valueMaxPlayers);
-    client.sadd("server:list", valueId);
-    if (callback) {
-        callback(null, server._id);
-    }
-};
-// get a list of server from mongo and update list on redis
-Broker.prototype.refreshPugList = function(callback) {
-    var self = this;
-    async.waterfall([
-        function(cb) {
-            mongo.Server.find({}, "name location ip port maxPlayers", function(err, servers) {
-                cb(err, servers);
-            });
-        },
-        function(servers, cb) {
-            client.del("server:list", function() {
-                cb(null, servers);
-            });
-        },
-        function(servers, cb) {
-            async.map(servers, self.setPug, function(err, results) {
-                cb(null, results);
-            });
-        }
-    ], function(err, results) {
-        if (callback) callback(err, results);
     });
 };
