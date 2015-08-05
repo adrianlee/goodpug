@@ -5,12 +5,42 @@
 + [Messages resource](#messages)
 + [Leagues resource](#leagues)
 
+## Error codes
+| Code | Description |
+| ---- | ----------- |
+| 200 | OK |
+| 401 | Unauthorized (Invalid API key or insufficient permissions) |
+| 404 | Object not found within your account scope |
+| 406 | Requested format is not supported - request JSON or XML only |
+| 422 | Validation error(s) for create or update method |
+| 500 | Something went wrong on our end. If you continually receive this, please contact us. |
+
+
 <a id="auth"></a>
 ## Authentication
 
 
 <a id="users"></a>
 ## Users
+**User object**
+```javascript
+{
+  "alias": "jun",
+  "first": "adrian",
+  "last": "lee",
+  "steamid": "steamid:0:1:12345",
+  "join": new Date()
+}
+```
+
+| Name | Description |
+| :--- | :---------- |
+| alias | nickname (mutable) |
+| first | First name |
+| last | Last name |
+| steamid | SteamID e.g.  steamid:0:1:12345 |
+| create | Account creation date |
+
 ### List all users
 ```
 GET /users
@@ -27,6 +57,16 @@ PUT /users/:id
 
 <a id="teams"></a>
 ## Teams
+
+| Name | Description |
+| :--- | :---------- |
+| name | Name of the team |
+| tag | shortname (unique) |
+| leagues | List of leagues the team belongs to |
+| players | List of users who play for the team |
+| owners | List of users who own this team |
+| create_date | Team creation date |
+
 ### List all teams
 ```
 GET /teams
@@ -60,9 +100,20 @@ PUT /matches/:league/:room/messages/:id
 
 
 <a id="leagues"></a>
-## League
+## Leagues
+
+| Name | Description |
+| :--- | :---------- |
+| name | Name of the league |
+| url | csgoscrim.com/leagues/ahgl |
+| description | Description of the league |
+| game_type | "csgo" |
+| owners | List of users who own this league |
+| matches | List of matches that belong to this league |
+| create_date | Team creation date |
+
 ### List leagues
-List leagues that the authentivated user is a member.
+List leagues that the authenticated user is a member.
 
 ### List all leagues
 List all leagues the authenticated user has access to or can join.
