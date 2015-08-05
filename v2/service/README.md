@@ -5,15 +5,17 @@
 + [Messages resource](#messages)
 + [Leagues resource](#leagues)
 
-## Error codes
+## Response Formats
+XML or JSON. The extension in your request indicates your desired response. e.g. https://api.challonge.com/v1/tournaments.xml or https://api.challonge.com/v1/tournaments.json - you may also set your request headers to accept application/json, text/xml or application/xml
+
+## Response Codes
 | Code | Description |
 | ---- | ----------- |
 | 200 | OK |
 | 401 | Unauthorized (Invalid API key or insufficient permissions) |
 | 404 | Object not found within your account scope |
-| 406 | Requested format is not supported - request JSON or XML only |
-| 422 | Validation error(s) for create or update method |
-| 500 | Something went wrong on our end. If you continually receive this, please contact us. |
+| 422 | Validation error |
+| 500 | Something went wrong on our end  |
 
 
 <a id="auth"></a>
