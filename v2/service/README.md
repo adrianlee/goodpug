@@ -6,7 +6,7 @@
 + [Leagues resource](#leagues)
 
 ## Response Formats
-XML or JSON. The extension in your request indicates your desired response. e.g. https://api.challonge.com/v1/tournaments.xml or https://api.challonge.com/v1/tournaments.json - you may also set your request headers to accept application/json, text/xml or application/xml
+JSON only
 
 ## Response Codes
 | Code | Description |
